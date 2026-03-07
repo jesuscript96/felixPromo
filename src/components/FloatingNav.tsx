@@ -29,11 +29,11 @@ export default function FloatingNav() {
         }
       }
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     // Initial check
     handleScroll();
-    
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -52,9 +52,8 @@ export default function FloatingNav() {
               setActive(item.id);
               document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className={`relative px-4 md:px-8 py-4 text-[10px] md:text-xs font-medium tracking-[0.2em] transition-all duration-300 ${
-              active === item.id ? 'text-brand-bg bg-brand-text' : 'text-brand-text/60 hover:text-brand-text hover:bg-brand-text/5'
-            }`}
+            className={`relative px-4 md:px-8 py-4 text-[10px] md:text-xs font-medium tracking-[0.2em] transition-all duration-300 ${active === item.id ? 'text-brand-bg bg-brand-accent' : 'text-brand-text/60 hover:text-brand-accent hover:bg-brand-accent/5'
+              }`}
           >
             <span className="relative z-10">{item.label}</span>
           </button>

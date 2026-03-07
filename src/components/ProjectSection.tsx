@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import projectImg from '../images/Residencial San Blas - 2.jpg';
 
 export default function ProjectSection() {
   return (
@@ -12,30 +13,24 @@ export default function ProjectSection() {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-heading font-medium leading-tight mb-12 text-brand-text">
-            Confort, Sostenibilidad y<br />Eficiencia
-            <div className="w-32 h-[1px] bg-brand-text mt-8" />
+            Diseño y<br />Exclusividad
+            <div className="w-32 h-[1px] bg-brand-accent mt-8" />
           </h2>
 
           <div className="space-y-8 text-lg md:text-xl font-light leading-relaxed text-brand-text/90">
             <p>
-              Verdea es un <strong className="font-medium">proyecto residencial</strong> de obra nueva donde la{' '}
-              <strong className="font-medium">sostenibilidad</strong> y la <strong className="font-medium">eficiencia energética</strong> se unen con las
-              mejores calidades para ofrecer una nueva forma de vivir,
-              proporcionando un <strong className="font-medium">impacto positivo</strong> ambiental,
-              económico y social.
+              NARA Moncada es un <strong className="font-medium">proyecto residencial</strong> de obra nueva donde la{' '}
+              <strong className="font-medium">sostenibilidad</strong> y la <strong className="font-medium">vanguardia</strong> se unen con las
+              mejores calidades para ofrecer una nueva forma de vivir y una rentabilidad inmejorable.
             </p>
 
             <p>
-              Ubicado en Valencia, el residencial cuenta con <strong className="font-medium">74
-              viviendas de 1 y 2 dormitorios</strong> diseñadas en madera y con
-              espectaculares vistas a La Huerta de Valencia.
+              Ubicado a 20 minutos de Valencia y a 12 minutos a pie del Metro, el edificio cuenta con <strong className="font-medium">25
+                viviendas de 1, 2 dormitorios y Áticos</strong> junto a <strong className="font-medium">25 trasteros y garajes</strong>.
             </p>
 
             <p>
-              El residencial comparte un diseño arquitectónico sostenible
-              y vanguardista, con un <strong className="font-medium">gran patio central</strong> como elemento
-              principal, garantizando <strong className="font-medium">luz natural y ventilación</strong> en todo el
-              edificio.
+              El residencial comparte un diseño arquitectónico exclusivo, garantizando <strong className="font-medium">luz natural</strong> en los ~2,160 m² de superficie construida.
             </p>
           </div>
         </motion.div>
@@ -51,10 +46,9 @@ export default function ProjectSection() {
           className="absolute inset-0 m-4 lg:m-8 lg:ml-0 overflow-hidden shadow-xl"
         >
           <img
-            src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-            alt="Interior view of Verdea project"
+            src={projectImg}
+            alt="Interior view of NARA Moncada"
             className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
           />
         </motion.div>
       </div>

@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import aboutImg from '../images/Residencial San Blas.jpg';
 
 export default function AboutSection() {
   return (
@@ -14,16 +15,16 @@ export default function AboutSection() {
           >
             <p className="text-sm tracking-[0.3em] uppercase font-medium mb-4 text-brand-accent">Sobre nosotros</p>
             <h2 className="text-4xl md:text-5xl font-heading font-medium leading-tight mb-8">
-              Construyendo un futuro<br />más sostenible
-              <div className="w-24 h-[1px] bg-brand-text mt-8" />
+              Oportunidad en<br />Moncada
+              <div className="w-24 h-[1px] bg-brand-accent mt-8" />
             </h2>
-            
+
             <div className="space-y-6 text-lg font-light leading-relaxed text-brand-text/80">
               <p>
-                En Verdea Real Estate, creemos que el desarrollo urbano debe ir de la mano con el respeto por nuestro entorno. Nos dedicamos a crear espacios que no solo ofrecen un hogar excepcional, sino que también contribuyen positivamente al medio ambiente.
+                En NARA Capital, ofrecemos esta oportunidad en una ubicación privilegiada. Moncada es una zona de alta demanda estratégica por su cercanía con la Universidad CEU Cardenal Herrera.
               </p>
               <p>
-                Nuestra filosofía se basa en la innovación arquitectónica, el uso de materiales nobles y sostenibles, y la integración de la naturaleza en el día a día de las personas. Cada proyecto es una oportunidad para redefinir la forma en que habitamos nuestras ciudades.
+                Con un crecimiento constante del mercado, NARA Moncada no solo ofrece un hogar excepcional de vanguardia y diseño, sino que también representa una inversión sólida con rentabilidad sostenida.
               </p>
             </div>
           </motion.div>
@@ -39,10 +40,9 @@ export default function AboutSection() {
             className="relative aspect-[4/5] overflow-hidden shadow-xl"
           >
             <img
-              src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-              alt="Arquitectura sostenible"
+              src={aboutImg}
+              alt="NARA Moncada Exterior"
               className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 border border-brand-text/10 m-4 pointer-events-none" />
           </motion.div>

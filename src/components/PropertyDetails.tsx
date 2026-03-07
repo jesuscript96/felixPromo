@@ -1,43 +1,65 @@
-import { useState } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Calculator, Info, Phone, Clock } from 'lucide-react';
+import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Calculator, Info, Phone, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import img1 from '../images/Residencial San Blas - 2.jpg';
+import img2 from '../images/Residencial Terra.png';
+import img3 from '../images/Residencial Terra - 2.png';
+import img4 from '../images/Residencial San Blas - 3.jpg';
+import { fetchTypologies, fetchUnits, Typology, Unit } from '../services/airtable';
 
 export default function PropertyDetails() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const images = [
-    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80",
-    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-  ];
+  const images = [img1, img2, img3, img4];
 
   const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
 
-  const typologies = [
-    { type: 'Piso', regime: 'Venta', status: 'Libre', beds: 2, size: '85.40 m²', price: '320.000 €' },
-    { type: 'Piso', regime: 'Venta', status: 'Libre', beds: 3, size: '105.63 m²', price: '460.000 €' },
-    { type: 'Ático', regime: 'Venta', status: 'Libre', beds: 4, size: '145.20 m²', price: '680.000 €' },
-  ];
+  const [typologies, setTypologies] = useState<Typology[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
+  const [expandedTypologyId, setExpandedTypologyId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      const [fetchedTypologies, fetchedUnits] = await Promise.all([
+        fetchTypologies(),
+        fetchUnits(),
+      ]);
+      setTypologies(fetchedTypologies);
+      setUnits(fetchedUnits);
+      setIsLoading(false);
+    };
+    loadData();
+  }, []);
+
+  const toggleTypology = (id: string) => {
+    setExpandedTypologyId(prev => (prev === id ? null : id));
+  };
+
+  const getUnitsForTypology = (typologyId: string) => {
+    return units.filter(u => u.Tipología?.includes(typologyId));
+  };
+
 
   return (
     <section id="promocion" className="py-24 bg-brand-bg text-brand-text">
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-        
+
         {/* 1. Cabecera de Título y Datos Rápidos */}
         <div className="mb-16 border-b border-brand-text/10 pb-8">
-          <h1 className="text-5xl md:text-6xl font-heading font-medium mb-6">Verdea Godella</h1>
-          
+          <h1 className="text-5xl md:text-6xl font-heading font-medium mb-6">NARA Moncada</h1>
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             {/* Metadatos de Ubicación */}
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 text-sm font-light tracking-wide">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-brand-accent" />
-                <span>Valencia - Godella</span>
+                <span>Moncada, Valencia</span>
               </div>
               <div className="flex items-center gap-2">
                 <Map className="w-4 h-4 text-brand-accent" />
-                <span>Calle Montgó 19, Godella</span>
+                <span>Eje Norte, Moncada</span>
               </div>
             </div>
 
@@ -59,17 +81,17 @@ export default function PropertyDetails() {
 
         {/* 2. Sección Principal de Contenido (Dos Columnas) */}
         <div className="flex flex-col lg:flex-row gap-12 mb-24">
-          
+
           {/* Columna Izquierda: Contenido Visual */}
           <div className="w-full lg:w-2/3 flex flex-col gap-4">
             {/* Galería Principal */}
             <div className="relative aspect-[16/9] overflow-hidden bg-brand-text/5 group">
-              <img 
-                src={images[currentImageIndex]} 
-                alt="Vista de la promoción" 
+              <img
+                src={images[currentImageIndex]}
+                alt="Vista de la promoción"
                 className="w-full h-full object-cover transition-transform duration-700"
               />
-              
+
               {/* Controles de Navegación */}
               <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 text-brand-text transition-colors opacity-0 group-hover:opacity-100">
                 <ChevronLeft className="w-6 h-6" />
@@ -80,7 +102,7 @@ export default function PropertyDetails() {
 
               {/* Botones de Acción Superpuestos */}
               <div className="absolute bottom-6 left-6 flex gap-4">
-                <button className="flex items-center gap-2 bg-brand-text text-brand-bg px-4 py-2 text-sm font-medium hover:bg-brand-accent transition-colors">
+                <button className="flex items-center gap-2 bg-brand-accent text-brand-bg px-4 py-2 text-sm font-medium hover:bg-brand-accent/90 transition-colors">
                   <Play className="w-4 h-4" /> Ver vídeo
                 </button>
                 <button className="flex items-center gap-2 bg-white text-brand-text px-4 py-2 text-sm font-medium hover:bg-gray-100 transition-colors">
@@ -97,8 +119,8 @@ export default function PropertyDetails() {
             {/* Carrusel de Miniaturas */}
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {images.map((img, idx) => (
-                <button 
-                  key={idx} 
+                <button
+                  key={idx}
                   onClick={() => setCurrentImageIndex(idx)}
                   className={`relative flex-shrink-0 w-32 aspect-video overflow-hidden transition-opacity ${currentImageIndex === idx ? 'opacity-100 ring-2 ring-brand-text ring-offset-2 ring-offset-brand-bg' : 'opacity-50 hover:opacity-100'}`}
                 >
@@ -113,13 +135,13 @@ export default function PropertyDetails() {
             <div className="sticky top-24 bg-white p-8 border border-brand-text/10 shadow-sm">
               <h3 className="text-2xl font-heading font-medium mb-2">¿Estás interesado?</h3>
               <p className="text-sm font-light text-brand-text/70 mb-6">Déjanos tus datos y nos pondremos en contacto contigo lo antes posible.</p>
-              
+
               <form className="flex flex-col gap-4">
                 <input type="text" placeholder="Nombre*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
                 <input type="text" placeholder="Apellidos*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
                 <input type="tel" placeholder="Teléfono*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
                 <input type="email" placeholder="E-mail*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
-                
+
                 <div className="mt-4 flex flex-col gap-3">
                   <label className="flex items-start gap-3 cursor-pointer group">
                     <input type="checkbox" required className="mt-1 accent-brand-text" />
@@ -135,7 +157,7 @@ export default function PropertyDetails() {
                   </label>
                 </div>
 
-                <button type="submit" className="mt-6 flex items-center justify-center gap-2 bg-brand-text text-brand-bg py-4 font-medium tracking-widest uppercase text-sm hover:bg-brand-accent transition-colors">
+                <button type="submit" className="mt-6 flex items-center justify-center gap-2 bg-brand-accent text-brand-bg py-4 font-medium tracking-widest uppercase text-sm hover:bg-brand-accent/90 transition-colors">
                   <Mail className="w-4 h-4" /> Enviar
                 </button>
               </form>
@@ -146,56 +168,104 @@ export default function PropertyDetails() {
         {/* 3. Sección de Tipologías */}
         <div className="mb-24">
           <h2 className="text-3xl font-heading font-medium mb-8">Tipologías de viviendas</h2>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
                 <tr className="border-b border-brand-text/20 text-xs tracking-widest uppercase font-medium text-brand-text/60">
                   <th className="py-4 px-4 font-medium">Tipología</th>
-                  <th className="py-4 px-4 font-medium">Tipo</th>
-                  <th className="py-4 px-4 font-medium">Régimen</th>
-                  <th className="py-4 px-4 font-medium">Dormitorios</th>
-                  <th className="py-4 px-4 font-medium">Metros const.</th>
-                  <th className="py-4 px-4 font-medium">Precio</th>
+                  <th className="py-4 px-4 font-medium">Uds Totales</th>
+                  <th className="py-4 px-4 font-medium">Rango m²</th>
+                  <th className="py-4 px-4 font-medium">Zonas Comunes</th>
                   <th className="py-4 px-4 font-medium text-center">Plano</th>
-                  <th className="py-4 px-4 font-medium text-right">Información</th>
+                  <th className="py-4 px-4 font-medium text-right">Desplegar</th>
                 </tr>
               </thead>
               <tbody className="text-sm font-light">
-                {typologies.map((item, idx) => (
-                  <tr key={idx} className="border-b border-brand-text/10 hover:bg-brand-text/5 transition-colors">
-                    <td className="py-6 px-4 font-medium">{item.type}</td>
-                    <td className="py-6 px-4">{item.regime}</td>
-                    <td className="py-6 px-4">{item.status}</td>
-                    <td className="py-6 px-4">{item.beds}</td>
-                    <td className="py-6 px-4">{item.size}</td>
-                    <td className="py-6 px-4 font-medium">{item.price}</td>
-                    <td className="py-6 px-4 text-center">
-                      <button className="text-brand-accent hover:text-brand-text transition-colors inline-block">
-                        <Download className="w-5 h-5" />
-                      </button>
-                    </td>
-                    <td className="py-6 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button className="p-2 border border-brand-text/20 hover:bg-brand-text hover:text-brand-bg transition-colors" title="Calcula tu hipoteca">
-                          <Calculator className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 border border-brand-text/20 hover:bg-brand-text hover:text-brand-bg transition-colors" title="Más información">
-                          <Info className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {isLoading ? (
+                  <tr><td colSpan={6} className="py-6 text-center">Cargando datos...</td></tr>
+                ) : typologies.map((item) => {
+                  const isExpanded = expandedTypologyId === item.id;
+                  const typologyUnits = getUnitsForTypology(item.id);
+                  return (
+                    <Fragment key={item.id}>
+                      <tr onClick={() => toggleTypology(item.id)} className="cursor-pointer border-b border-brand-text/10 hover:bg-brand-accent/10 transition-colors">
+                        <td className="py-6 px-4 font-medium">{item.Nombre || 'N/A'}</td>
+                        <td className="py-6 px-4">{item['Uds. Totales'] || 0}</td>
+                        <td className="py-6 px-4">{item['Rango Tamaño'] || '-'}</td>
+                        <td className="py-6 px-4">{item['Zonas Comunes'] || '-'}</td>
+                        <td className="py-6 px-4 text-center">
+                          {item['Planos de Tipología']?.[0] ? (
+                            <a href={item['Planos de Tipología'][0].url} target="_blank" rel="noreferrer" className="text-brand-accent hover:text-brand-highlight transition-colors inline-block" onClick={e => e.stopPropagation()} title="Descargar plano">
+                              <Download className="w-5 h-5" />
+                            </a>
+                          ) : '-'}
+                        </td>
+                        <td className="py-6 px-4 text-right">
+                          <button className="p-2 border border-brand-text/20 hover:bg-brand-accent hover:border-brand-accent hover:text-brand-bg transition-colors">
+                            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          </button>
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan={6} className="p-0 border-b border-brand-text/10 bg-brand-accent/5">
+                            <div className="p-6 md:px-12">
+                              <h4 className="text-sm font-medium mb-4 uppercase tracking-wider text-brand-text border-l-2 border-brand-accent pl-3">Unidades de la Tipología</h4>
+                              {typologyUnits.length > 0 ? (
+                                <div className="overflow-x-auto">
+                                  <table className="w-full text-left border-collapse text-sm bg-white shadow-sm border border-brand-text/5">
+                                    <thead>
+                                      <tr className="border-b border-brand-text/20 font-medium bg-brand-bg">
+                                        <th className="py-3 px-4 text-brand-text/80">Ref.</th>
+                                        <th className="py-3 px-4 text-brand-text/80">Planta</th>
+                                        <th className="py-3 px-4 text-brand-text/80">Habitaciones</th>
+                                        <th className="py-3 px-4 text-brand-text/80">m² Const.</th>
+                                        <th className="py-3 px-4 text-brand-text/80">Terraza</th>
+                                        <th className="py-3 px-4 text-brand-text/80">Estado</th>
+                                        <th className="py-3 px-4 text-right text-brand-text/80">Precio</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {typologyUnits.sort((a, b) => (a.Referencia || '').localeCompare(b.Referencia || '')).map(unit => (
+                                        <tr key={unit.id} className="border-b border-brand-text/10 last:border-0 hover:bg-brand-accent/5 transition-colors">
+                                          <td className="py-3 px-4 font-medium">{unit.Referencia || '-'}</td>
+                                          <td className="py-3 px-4">{unit.Planta || '-'}</td>
+                                          <td className="py-3 px-4">{unit.Habitaciones || '-'}</td>
+                                          <td className="py-3 px-4">{unit['m² Construidos'] ? `${unit['m² Construidos']} m²` : '-'}</td>
+                                          <td className="py-3 px-4">{unit['m² Terraza'] ? `${unit['m² Terraza']} m²` : '-'}</td>
+                                          <td className="py-3 px-4">
+                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${unit.Estado === 'Disponible' ? 'bg-green-100 text-green-800' : unit.Estado === 'Reservado' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                                              {unit.Estado || 'Desconocido'}
+                                            </span>
+                                          </td>
+                                          <td className="py-3 px-4 text-right font-medium text-brand-accent">
+                                            {unit['Precio de Venta (PVP)'] ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(unit['Precio de Venta (PVP)']!) : "Consultar"}
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              ) : (
+                                <p className="text-sm text-brand-text/60 italic border border-brand-text/10 p-4 bg-white">No hay unidades cargadas para esta tipología.</p>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-4">
-            <button className="flex items-center gap-2 border border-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-text hover:text-brand-bg transition-colors">
+            <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors">
               <Download className="w-4 h-4" /> Descargar memoria de calidades
             </button>
-            <button className="flex items-center gap-2 border border-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-text hover:text-brand-bg transition-colors">
+            <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors">
               <Download className="w-4 h-4" /> Descargar dossier
             </button>
           </div>
@@ -204,7 +274,7 @@ export default function PropertyDetails() {
         {/* 4. Sección de Ubicación y Contacto Offline */}
         <div>
           <h2 className="text-3xl font-heading font-medium mb-8">Ubicación de la promoción</h2>
-          
+
           <div className="relative w-full h-[400px] bg-gray-200 mb-12 flex items-center justify-center group overflow-hidden">
             {/* Placeholder for Google Maps */}
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80')] bg-cover bg-center opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700" />
@@ -212,7 +282,7 @@ export default function PropertyDetails() {
               <button className="px-4 py-2 bg-gray-100 text-brand-text">Map</button>
               <button className="px-4 py-2 text-brand-text/60 hover:text-brand-text">Satellite</button>
             </div>
-            <button className="relative z-10 bg-brand-text text-brand-bg px-8 py-4 font-medium tracking-widest uppercase text-sm hover:bg-brand-accent transition-colors shadow-xl">
+            <button className="relative z-10 bg-brand-accent text-brand-bg px-8 py-4 font-medium tracking-widest uppercase text-sm hover:bg-brand-highlight transition-colors shadow-xl">
               Ver ubicación
             </button>
           </div>
@@ -226,9 +296,9 @@ export default function PropertyDetails() {
               <div>
                 <h4 className="text-lg font-medium mb-2">Dirección de la promoción</h4>
                 <p className="text-sm font-light leading-relaxed text-brand-text/80">
-                  Calle Montgó 19<br />
-                  46110<br />
-                  Godella, Valencia
+                  Moncada<br />
+                  46113<br />
+                  Moncada, Valencia
                 </p>
               </div>
             </div>
@@ -245,7 +315,7 @@ export default function PropertyDetails() {
                   46015<br />
                   Valencia
                 </p>
-                
+
                 <div className="flex items-center gap-2 mb-4 text-brand-accent font-medium">
                   <Phone className="w-4 h-4" />
                   <a href="tel:+34900123456" className="hover:underline">+34 900 123 456</a>

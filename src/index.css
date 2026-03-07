@@ -4,9 +4,10 @@
 @theme {
   --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Playfair Display", ui-serif, Georgia, serif;
-  --color-brand-bg: #F4F4F2;
-  --color-brand-text: #1C1C1A;
-  --color-brand-accent: #8C857B;
+  --color-brand-bg: #F5F5F0;
+  --color-brand-text: #1a1a1a;
+  --color-brand-accent: #1F4D33;
+  --color-brand-highlight: #26A69A;
 }
 
 html {

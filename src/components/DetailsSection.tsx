@@ -1,22 +1,23 @@
 import { motion } from 'motion/react';
+import detailsImg from '../images/Residencial San Blas - 3.jpg';
 
 export default function DetailsSection() {
   const details = [
     {
-      title: 'Coworking',
-      description: 'Coworking abierto a la comunidad, diseñado para impulsar nuevas formas de trabajo en comunidad. Un espacio que cuida, conecta y potencia el talento compartido.'
+      title: 'Piscina Comunitaria',
+      description: 'Disfruta de una zona de baño exclusiva, ideal para refrescarse y relajarse bajo el clima soleado de Valencia, todo dentro del recinto.'
     },
     {
-      title: 'Gym',
-      description: 'Gimnasio comunitario para los amantes de la vida saludable, con terraza abierta al paisaje, donde el bienestar se conecta con la Huerta valenciana.'
+      title: 'Gimnasio',
+      description: 'Zonas deportivas equipadas para mantener un estilo de vida activo y saludable sin tener que salir del edificio.'
     },
     {
-      title: 'Patio central',
-      description: 'El corazón verde del proyecto: un espacio compartido que conecta y da vida a la comunidad de Verdea. Diseñado para convivir, descansar y disfrutar en un entorno natural y luminoso.'
+      title: 'Sala Polivalente',
+      description: 'Un espacio flexbile y acogedor pensado para el ocio, reuniones de la comunidad, y celebraciones, potenciando la vida compartida.'
     },
     {
-      title: 'Zonas vegetales',
-      description: 'Iluminadas por el gran patio central, donde sentarte y disfrutar de la naturaleza en el interior de tu hogar.'
+      title: 'Trasteros y Garajes',
+      description: '25 plazas de aparcamiento y trasteros privados, ofreciendo la máxima comodidad y seguridad en tu día a día.'
     }
   ];
 
@@ -32,7 +33,7 @@ export default function DetailsSection() {
         >
           <h2 className="text-4xl md:text-5xl font-heading font-medium leading-tight mb-16 text-brand-text">
             Espacios comunes<br />Planta Baja
-            <div className="w-32 h-[1px] bg-brand-text mt-8" />
+            <div className="w-32 h-[1px] bg-brand-accent mt-8" />
           </h2>
 
           <div className="space-y-12">
@@ -67,10 +68,9 @@ export default function DetailsSection() {
           className="absolute inset-0 m-4 lg:m-8 lg:ml-0 overflow-hidden shadow-xl"
         >
           <img
-            src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-            alt="Common areas of Verdea project"
+            src={detailsImg}
+            alt="Common areas of NARA Moncada"
             className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
           />
         </motion.div>
       </div>

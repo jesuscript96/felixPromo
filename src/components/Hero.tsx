@@ -1,13 +1,14 @@
 import { motion } from 'motion/react';
 import { Menu } from 'lucide-react';
+import heroBg from '../images/Residencial Terra.png';
 
 export default function Hero() {
   return (
     <section id="inicio" className="relative h-screen w-full overflow-hidden">
       {/* Background Image */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80")' }}
+        style={{ backgroundImage: `url(${heroBg})` }}
       >
         <div className="absolute inset-0 bg-black/30" />
       </div>
@@ -51,15 +52,15 @@ export default function Hero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="max-w-3xl text-white"
         >
-          <p className="text-sm md:text-base tracking-[0.2em] uppercase mb-2">Edificio</p>
-          <h1 className="text-6xl md:text-8xl font-heading font-medium mb-2 tracking-tight">Verdea</h1>
-          <p className="text-sm md:text-base tracking-[0.3em] uppercase font-light mb-12 opacity-90">by Verdea Real Estate</p>
-          
-          <p className="text-lg md:text-xl font-light mb-4">Invierte en un residencial sostenible</p>
+          <p className="text-sm md:text-base tracking-[0.2em] uppercase mb-2">Promoción</p>
+          <h1 className="text-6xl md:text-8xl font-heading font-medium mb-2 tracking-tight">NARA Moncada</h1>
+          <p className="text-sm md:text-base tracking-[0.3em] uppercase font-light mb-12 opacity-90">Vanguardia y Diseño en el eje norte de Valencia</p>
+
+          <p className="text-lg md:text-xl font-light mb-4">A un paso del CEU y a 20 minutos de Valencia</p>
           <h2 className="text-4xl md:text-5xl font-heading font-medium leading-tight mb-10">
-            Viviendas de obra nueva<br />de 1 y 2 dormitorios
+            25 Viviendas<br />de 1, 2 dormitorios y Áticos
           </h2>
-          
+
           <div className="inline-block px-8 py-4 border border-white/50 backdrop-blur-sm hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
             <span className="text-sm tracking-[0.2em] uppercase font-medium">Valencia, España</span>
           </div>
