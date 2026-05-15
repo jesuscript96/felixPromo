@@ -1,18 +1,28 @@
 import { useState, useEffect, Fragment } from 'react';
-import { motion } from 'motion/react';
-import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Calculator, Info, Phone, Clock, ChevronDown, ChevronUp } from 'lucide-react';
-import img1 from '../images/Residencial San Blas - 2.jpg';
-import img2 from '../images/Residencial Terra.png';
-import img3 from '../images/Residencial Terra - 2.png';
-import img4 from '../images/Residencial San Blas - 3.jpg';
+import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Phone, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import img1Fallback from '../images/Residencial San Blas - 2.jpg';
+import img2Fallback from '../images/Residencial Terra.png';
+import img3Fallback from '../images/Residencial Terra - 2.png';
+import img4Fallback from '../images/Residencial San Blas - 3.jpg';
 import { fetchTypologies, fetchUnits, Typology, Unit } from '../services/airtable';
+import { useContent } from '../context/ContentContext';
+
+const FALLBACK_IMAGES = [img1Fallback, img2Fallback, img3Fallback, img4Fallback];
 
 export default function PropertyDetails() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const images = [img1, img2, img3, img4];
+  const { config, secciones, imagenes } = useContent();
+  const s = secciones['propiedad'] ?? {};
 
-  const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  // Galería: imágenes de Airtable o fallbacks estáticos
+  const galeriaAirtable = imagenes['galeria'] ?? [];
+  const galleryImages: string[] =
+    galeriaAirtable.length > 0
+      ? galeriaAirtable.map((img) => img.Imagen?.[0]?.url ?? '').filter(Boolean)
+      : FALLBACK_IMAGES;
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
+  const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
 
   const [typologies, setTypologies] = useState<Typology[]>([]);
   const [units, setUnits] = useState<Unit[]>([]);
@@ -34,65 +44,73 @@ export default function PropertyDetails() {
   }, []);
 
   const toggleTypology = (id: string) => {
-    setExpandedTypologyId(prev => (prev === id ? null : id));
+    setExpandedTypologyId((prev) => (prev === id ? null : id));
   };
 
-  const getUnitsForTypology = (typologyId: string) => {
-    return units.filter(u => u.Tipología?.includes(typologyId));
-  };
+  const getUnitsForTypology = (typologyId: string) =>
+    units.filter((u) => u.Tipología?.includes(typologyId));
 
+  // Datos de contacto desde config
+  const telefono = config['Teléfono'] ?? '+34 900 123 456';
+  const dirPromocion = config['Dirección Promoción'] ?? 'Moncada';
+  const cpPromocion = config['CP Promoción'] ?? '46113';
+  const ciudadPromocion = config['Ciudad Promoción'] ?? 'Moncada, Valencia';
+  const dirOficina = config['Dirección Oficina'] ?? 'Avenida de las Cortes Valencianas 58';
+  const cpOficina = config['CP Oficina'] ?? '46015';
+  const ciudadOficina = config['Ciudad Oficina'] ?? 'Valencia';
+  const horarioLV = config['Horario L-V'] ?? '10:00h - 14:00h | 16:30h - 20:00h';
+  const horarioSab = config['Horario Sábado'] ?? '10:00h - 14:00h';
+  const horarioDom = config['Horario Domingo'] ?? 'Cerrado';
 
   return (
     <section id="promocion" className="py-24 bg-brand-bg text-brand-text">
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
 
-        {/* 1. Cabecera de Título y Datos Rápidos */}
+        {/* 1. Cabecera */}
         <div className="mb-16 border-b border-brand-text/10 pb-8">
-          <h1 className="text-5xl md:text-6xl font-heading font-medium mb-6">NARA Moncada</h1>
+          <h1 className="text-5xl md:text-6xl font-heading font-medium mb-6">
+            {config['Nombre Promoción'] ?? 'NARA Moncada'}
+          </h1>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            {/* Metadatos de Ubicación */}
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 text-sm font-light tracking-wide">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-brand-accent" />
-                <span>Moncada, Valencia</span>
+                <span>{ciudadPromocion}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Map className="w-4 h-4 text-brand-accent" />
-                <span>Eje Norte, Moncada</span>
+                <span>{dirPromocion}</span>
               </div>
             </div>
 
-            {/* Resumen de Venta */}
             <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm font-medium">
               <div className="bg-brand-text text-brand-bg px-4 py-2">
-                Desde <span className="text-lg">320.000€</span>
+                Desde <span className="text-lg">{config['Precio Desde'] ?? '320.000€'}</span>
               </div>
               <div className="flex items-center gap-2 border border-brand-text/20 px-4 py-2">
                 <BedDouble className="w-4 h-4 text-brand-accent" />
-                <span>2, 3 y 4</span>
+                <span>1, 2 y 3</span>
               </div>
               <div className="text-brand-accent tracking-widest uppercase text-xs font-bold">
-                EN COMERCIALIZACIÓN
+                {config['Estado Comercialización'] ?? 'EN COMERCIALIZACIÓN'}
               </div>
             </div>
           </div>
         </div>
 
-        {/* 2. Sección Principal de Contenido (Dos Columnas) */}
+        {/* 2. Galería + Formulario */}
         <div className="flex flex-col lg:flex-row gap-12 mb-24">
 
-          {/* Columna Izquierda: Contenido Visual */}
+          {/* Galería */}
           <div className="w-full lg:w-2/3 flex flex-col gap-4">
-            {/* Galería Principal */}
             <div className="relative aspect-[16/9] overflow-hidden bg-brand-text/5 group">
               <img
-                src={images[currentImageIndex]}
+                src={galleryImages[currentImageIndex]}
                 alt="Vista de la promoción"
                 className="w-full h-full object-cover transition-transform duration-700"
               />
 
-              {/* Controles de Navegación */}
               <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 text-brand-text transition-colors opacity-0 group-hover:opacity-100">
                 <ChevronLeft className="w-6 h-6" />
               </button>
@@ -100,29 +118,44 @@ export default function PropertyDetails() {
                 <ChevronRight className="w-6 h-6" />
               </button>
 
-              {/* Botones de Acción Superpuestos */}
               <div className="absolute bottom-6 left-6 flex gap-4">
-                <button className="flex items-center gap-2 bg-brand-accent text-brand-bg px-4 py-2 text-sm font-medium hover:bg-brand-accent/90 transition-colors">
-                  <Play className="w-4 h-4" /> Ver vídeo
-                </button>
-                <button className="flex items-center gap-2 bg-white text-brand-text px-4 py-2 text-sm font-medium hover:bg-gray-100 transition-colors">
-                  <Eye className="w-4 h-4" /> Visita Virtual
-                </button>
+                {config['URL Vídeo'] && (
+                  <a
+                    href={config['URL Vídeo']}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 bg-brand-accent text-brand-bg px-4 py-2 text-sm font-medium hover:bg-brand-accent/90 transition-colors"
+                  >
+                    <Play className="w-4 h-4" /> Ver vídeo
+                  </a>
+                )}
+                {config['URL Visita Virtual'] && (
+                  <a
+                    href={config['URL Visita Virtual']}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 bg-white text-brand-text px-4 py-2 text-sm font-medium hover:bg-gray-100 transition-colors"
+                  >
+                    <Eye className="w-4 h-4" /> Visita Virtual
+                  </a>
+                )}
               </div>
 
-              {/* Indicador */}
               <div className="absolute bottom-6 right-6 bg-black/50 text-white px-3 py-1 text-sm font-mono backdrop-blur-sm">
-                {currentImageIndex + 1} / {images.length}
+                {currentImageIndex + 1} / {galleryImages.length}
               </div>
             </div>
 
-            {/* Carrusel de Miniaturas */}
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {images.map((img, idx) => (
+              {galleryImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentImageIndex(idx)}
-                  className={`relative flex-shrink-0 w-32 aspect-video overflow-hidden transition-opacity ${currentImageIndex === idx ? 'opacity-100 ring-2 ring-brand-text ring-offset-2 ring-offset-brand-bg' : 'opacity-50 hover:opacity-100'}`}
+                  className={`relative flex-shrink-0 w-32 aspect-video overflow-hidden transition-opacity ${
+                    currentImageIndex === idx
+                      ? 'opacity-100 ring-2 ring-brand-text ring-offset-2 ring-offset-brand-bg'
+                      : 'opacity-50 hover:opacity-100'
+                  }`}
                 >
                   <img src={img} alt={`Miniatura ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
@@ -130,11 +163,15 @@ export default function PropertyDetails() {
             </div>
           </div>
 
-          {/* Columna Derecha: Captación de Leads (Sticky Form) */}
+          {/* Formulario de contacto */}
           <div className="w-full lg:w-1/3">
             <div className="sticky top-24 bg-white p-8 border border-brand-text/10 shadow-sm">
-              <h3 className="text-2xl font-heading font-medium mb-2">¿Estás interesado?</h3>
-              <p className="text-sm font-light text-brand-text/70 mb-6">Déjanos tus datos y nos pondremos en contacto contigo lo antes posible.</p>
+              <h3 className="text-2xl font-heading font-medium mb-2">
+                {s.Subtítulo ?? '¿Estás interesado?'}
+              </h3>
+              <p className="text-sm font-light text-brand-text/70 mb-6">
+                {s['Párrafo 1'] ?? 'Déjanos tus datos y nos pondremos en contacto contigo lo antes posible.'}
+              </p>
 
               <form className="flex flex-col gap-4">
                 <input type="text" placeholder="Nombre*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
@@ -146,7 +183,10 @@ export default function PropertyDetails() {
                   <label className="flex items-start gap-3 cursor-pointer group">
                     <input type="checkbox" required className="mt-1 accent-brand-text" />
                     <span className="text-xs font-light text-brand-text/80 group-hover:text-brand-text">
-                      He leído y acepto los <a href="#" className="underline hover:text-brand-accent">Términos, Condiciones y Política de Privacidad</a>.*
+                      He leído y acepto los{' '}
+                      <a href={config['URL Privacidad'] ?? '#'} className="underline hover:text-brand-accent">
+                        Términos, Condiciones y Política de Privacidad
+                      </a>.*
                     </span>
                   </label>
                   <label className="flex items-start gap-3 cursor-pointer group">
@@ -165,9 +205,11 @@ export default function PropertyDetails() {
           </div>
         </div>
 
-        {/* 3. Sección de Tipologías */}
+        {/* 3. Tipologías */}
         <div className="mb-24">
-          <h2 className="text-3xl font-heading font-medium mb-8">Tipologías de viviendas</h2>
+          <h2 className="text-3xl font-heading font-medium mb-8">
+            {s.Título ?? 'Tipologías de viviendas'}
+          </h2>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
@@ -196,7 +238,7 @@ export default function PropertyDetails() {
                         <td className="py-6 px-4">{item['Zonas Comunes'] || '-'}</td>
                         <td className="py-6 px-4 text-center">
                           {item['Planos de Tipología']?.[0] ? (
-                            <a href={item['Planos de Tipología'][0].url} target="_blank" rel="noreferrer" className="text-brand-accent hover:text-brand-highlight transition-colors inline-block" onClick={e => e.stopPropagation()} title="Descargar plano">
+                            <a href={item['Planos de Tipología'][0].url} target="_blank" rel="noreferrer" className="text-brand-accent hover:text-brand-highlight transition-colors inline-block" onClick={(e) => e.stopPropagation()} title="Descargar plano">
                               <Download className="w-5 h-5" />
                             </a>
                           ) : '-'}
@@ -227,7 +269,7 @@ export default function PropertyDetails() {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {typologyUnits.sort((a, b) => (a.Referencia || '').localeCompare(b.Referencia || '')).map(unit => (
+                                      {typologyUnits.sort((a, b) => (a.Referencia || '').localeCompare(b.Referencia || '')).map((unit) => (
                                         <tr key={unit.id} className="border-b border-brand-text/10 last:border-0 hover:bg-brand-accent/5 transition-colors">
                                           <td className="py-3 px-4 font-medium">{unit.Referencia || '-'}</td>
                                           <td className="py-3 px-4">{unit.Planta || '-'}</td>
@@ -240,7 +282,9 @@ export default function PropertyDetails() {
                                             </span>
                                           </td>
                                           <td className="py-3 px-4 text-right font-medium text-brand-accent">
-                                            {unit['Precio de Venta (PVP)'] ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(unit['Precio de Venta (PVP)']!) : "Consultar"}
+                                            {unit['Precio de Venta (PVP)']
+                                              ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(unit['Precio de Venta (PVP)']!)
+                                              : 'Consultar'}
                                           </td>
                                         </tr>
                                       ))}
@@ -262,21 +306,44 @@ export default function PropertyDetails() {
           </div>
 
           <div className="mt-8 flex flex-wrap gap-4">
-            <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors">
-              <Download className="w-4 h-4" /> Descargar memoria de calidades
-            </button>
-            <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors">
-              <Download className="w-4 h-4" /> Descargar dossier
-            </button>
+            {config['URL Memoria Calidades'] ? (
+              <a
+                href={config['URL Memoria Calidades']}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors"
+              >
+                <Download className="w-4 h-4" /> Descargar memoria de calidades
+              </a>
+            ) : (
+              <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors">
+                <Download className="w-4 h-4" /> Descargar memoria de calidades
+              </button>
+            )}
+            {config['URL Dossier'] ? (
+              <a
+                href={config['URL Dossier']}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors"
+              >
+                <Download className="w-4 h-4" /> Descargar dossier
+              </a>
+            ) : (
+              <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors">
+                <Download className="w-4 h-4" /> Descargar dossier
+              </button>
+            )}
           </div>
         </div>
 
-        {/* 4. Sección de Ubicación y Contacto Offline */}
+        {/* 4. Ubicación y Contacto */}
         <div>
-          <h2 className="text-3xl font-heading font-medium mb-8">Ubicación de la promoción</h2>
+          <h2 className="text-3xl font-heading font-medium mb-8">
+            {s['Etiqueta Superior'] ?? 'Ubicación de la promoción'}
+          </h2>
 
           <div className="relative w-full h-[400px] bg-gray-200 mb-12 flex items-center justify-center group overflow-hidden">
-            {/* Placeholder for Google Maps */}
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80')] bg-cover bg-center opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700" />
             <div className="absolute top-4 right-4 flex bg-white shadow-sm text-xs font-medium">
               <button className="px-4 py-2 bg-gray-100 text-brand-text">Map</button>
@@ -288,7 +355,6 @@ export default function PropertyDetails() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-brand-text/10 pt-12">
-            {/* Dirección de la promoción */}
             <div className="flex gap-4">
               <div className="mt-1">
                 <MapPin className="w-6 h-6 text-brand-accent" />
@@ -296,14 +362,13 @@ export default function PropertyDetails() {
               <div>
                 <h4 className="text-lg font-medium mb-2">Dirección de la promoción</h4>
                 <p className="text-sm font-light leading-relaxed text-brand-text/80">
-                  Moncada<br />
-                  46113<br />
-                  Moncada, Valencia
+                  {dirPromocion}<br />
+                  {cpPromocion}<br />
+                  {ciudadPromocion}
                 </p>
               </div>
             </div>
 
-            {/* Dirección de la oficina de ventas */}
             <div className="flex gap-4">
               <div className="mt-1">
                 <Map className="w-6 h-6 text-brand-accent" />
@@ -311,22 +376,22 @@ export default function PropertyDetails() {
               <div>
                 <h4 className="text-lg font-medium mb-2">Oficina de ventas</h4>
                 <p className="text-sm font-light leading-relaxed text-brand-text/80 mb-4">
-                  Avenida de las Cortes Valencianas 58<br />
-                  46015<br />
-                  Valencia
+                  {dirOficina}<br />
+                  {cpOficina}<br />
+                  {ciudadOficina}
                 </p>
 
                 <div className="flex items-center gap-2 mb-4 text-brand-accent font-medium">
                   <Phone className="w-4 h-4" />
-                  <a href="tel:+34900123456" className="hover:underline">+34 900 123 456</a>
+                  <a href={`tel:${telefono.replace(/\s/g, '')}`} className="hover:underline">{telefono}</a>
                 </div>
 
                 <div className="flex gap-2 text-sm font-light text-brand-text/80">
                   <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p><span className="font-medium text-brand-text">L-V:</span> 10:00h - 14:00h | 16:30h - 20:00h</p>
-                    <p><span className="font-medium text-brand-text">Sábado:</span> 10:00h - 14:00h</p>
-                    <p><span className="font-medium text-brand-text">Domingo:</span> Cerrado</p>
+                    <p><span className="font-medium text-brand-text">L-V:</span> {horarioLV}</p>
+                    <p><span className="font-medium text-brand-text">Sábado:</span> {horarioSab}</p>
+                    <p><span className="font-medium text-brand-text">Domingo:</span> {horarioDom}</p>
                   </div>
                 </div>
               </div>
