@@ -266,6 +266,7 @@ export default function PropertyDetails() {
                                         <th className="py-3 px-4 text-brand-text/80">Terraza</th>
                                         <th className="py-3 px-4 text-brand-text/80">Estado</th>
                                         <th className="py-3 px-4 text-right text-brand-text/80">Precio</th>
+                                        <th className="py-3 px-4 text-center text-brand-text/80">Dossier</th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -285,6 +286,19 @@ export default function PropertyDetails() {
                                             {unit['Precio de Venta (PVP)']
                                               ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(unit['Precio de Venta (PVP)']!)
                                               : 'Consultar'}
+                                          </td>
+                                          <td className="py-3 px-4 text-center">
+                                            {unit.Documentación?.[0] ? (
+                                              <a
+                                                href={unit.Documentación[0].url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="text-brand-accent hover:text-brand-highlight transition-colors inline-block"
+                                                title="Descargar dossier"
+                                              >
+                                                <Download className="w-4 h-4" />
+                                              </a>
+                                            ) : '-'}
                                           </td>
                                         </tr>
                                       ))}
@@ -343,15 +357,28 @@ export default function PropertyDetails() {
             {s['Etiqueta Superior'] ?? 'Ubicación de la promoción'}
           </h2>
 
-          <div className="relative w-full h-[400px] bg-gray-200 mb-12 flex items-center justify-center group overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80')] bg-cover bg-center opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700" />
-            <div className="absolute top-4 right-4 flex bg-white shadow-sm text-xs font-medium">
-              <button className="px-4 py-2 bg-gray-100 text-brand-text">Map</button>
-              <button className="px-4 py-2 text-brand-text/60 hover:text-brand-text">Satellite</button>
+          <div className="relative w-full h-[450px] mb-12 overflow-hidden">
+            <iframe
+              src="https://maps.google.com/maps?q=Moncada+Valencia+46113+Spain&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Ubicación NARA Moncada"
+              className="w-full h-full"
+            />
+            <div className="absolute bottom-6 right-6">
+              <a
+                href="https://maps.app.goo.gl/ArKPwY9YHNMnSmpn8"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 bg-brand-accent text-brand-bg px-6 py-3 font-medium tracking-widest uppercase text-sm hover:bg-brand-highlight transition-colors shadow-xl"
+              >
+                <MapPin className="w-4 h-4" /> Ver en Google Maps
+              </a>
             </div>
-            <button className="relative z-10 bg-brand-accent text-brand-bg px-8 py-4 font-medium tracking-widest uppercase text-sm hover:bg-brand-highlight transition-colors shadow-xl">
-              Ver ubicación
-            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-brand-text/10 pt-12">

@@ -1,246 +1,370 @@
-# Guía Airtable CMS — NARA Moncada
-*Para el Product Manager / Equipo de Contenidos*
+# Guía de contenidos — NARA Moncada
+### Para el equipo de marketing y producto
 
 ---
 
-## ¿Qué puedes gestionar desde Airtable?
+## Cómo funciona
 
-**Todo.** Textos, imágenes, amenidades, zonas comunes, menú de navegación, datos de contacto, precios, horarios, enlaces legales y ficheros descargables. La web se actualiza automáticamente al recargar la página.
+La web de NARA Moncada está conectada en tiempo real a esta base de datos de Airtable. **Cualquier cambio que hagas aquí se refleja en la web al recargar la página** — no hace falta tocar código ni hablar con el equipo técnico.
 
----
+La base de datos tiene **8 tablas**. Cada una controla una parte de la web:
 
-## Estructura de tablas
-
-La base de datos tiene **8 tablas** en total:
-
-| Tabla | Para qué sirve |
+| Tabla | Qué controla |
 |---|---|
-| `CONFIGURACION` | Datos globales del site (1 único registro) |
-| `SECCIONES` | Copys de cada sección de la web |
-| `IMAGENES` | Biblioteca de imágenes organizada por sección |
-| `AMENIDADES` | Lista de servicios/amenidades |
-| `ZONAS_COMUNES` | Descripción de zonas comunes con detalle |
-| `NAVEGACION` | Ítems del menú flotante |
-| `TIPOLOGÍAS` | Tipologías de viviendas *(ya existía)* |
-| `UNIDADES` | Unidades disponibles con precios *(ya existía)* |
+| **CONFIGURACION** | Nombre del proyecto, precio, teléfono, horarios, direcciones, URLs de documentos, footer |
+| **SECCIONES** | Los textos de cada sección de la web (títulos, párrafos) |
+| **IMAGENES** | Todas las imágenes (fondo hero, secciones, carrusel de galería) |
+| **AMENIDADES** | Los iconos y nombres del apartado de servicios |
+| **ZONAS\_COMUNES** | Las descripciones de cada zona común (piscina, gimnasio…) |
+| **NAVEGACION** | Los botones del menú flotante |
+| **TIPOLOGÍAS** | Las tipologías de vivienda con planos descargables |
+| **UNIDADES** | Cada piso o ático con precio, estado y metros |
+
+---
+
+## Regla de oro
+
+> Si un campo está vacío, la web usa el texto original que tenía por defecto. **Nada se rompe si dejas un campo en blanco.**
 
 ---
 
 ## Tabla 1 — CONFIGURACION
 
-> Solo hay **un registro** en esta tabla. Edita sus campos directamente.
+Esta tabla tiene **un único registro**. Todos sus campos son editables directamente.
 
-| Campo | Tipo | Ejemplo | Para qué sirve |
-|---|---|---|---|
-| Nombre Promoción | Texto corto | `NARA Moncada` | Nombre del proyecto en toda la web |
-| Tagline Hero | Texto corto | `Vanguardia y Diseño en el eje norte de Valencia` | Línea pequeña bajo el título principal |
-| Descripción Hero | Texto corto | `A un paso del CEU y a 20 minutos de Valencia` | Subtexto del hero |
-| Subtítulo Hero | Texto corto | `25 Viviendas de 1, 2 dormitorios y Áticos` | Heading secundario del hero |
-| Localización | Texto corto | `Valencia, España` | Botón/píldora de ubicación en el hero |
-| Precio Desde | Texto corto | `320.000€` | Precio mínimo mostrado en la ficha |
-| Estado Comercialización | Texto corto | `EN COMERCIALIZACIÓN` | Badge de estado |
-| URL Vídeo | URL | `https://youtube.com/...` | Si rellenas, aparece el botón "Ver vídeo" |
-| URL Visita Virtual | URL | `https://matterport.com/...` | Si rellenas, aparece el botón "Visita Virtual" |
-| Teléfono | Texto corto | `+34 900 123 456` | Teléfono de la oficina de ventas |
-| Dirección Promoción | Texto corto | `Calle Ejemplo, 12` | Dirección del inmueble |
-| CP Promoción | Texto corto | `46113` | Código postal del inmueble |
-| Ciudad Promoción | Texto corto | `Moncada, Valencia` | Ciudad del inmueble |
-| Dirección Oficina | Texto corto | `Avenida de las Cortes Valencianas 58` | Dirección de la oficina de ventas |
-| CP Oficina | Texto corto | `46015` | CP de la oficina |
-| Ciudad Oficina | Texto corto | `Valencia` | Ciudad de la oficina |
-| Horario L-V | Texto corto | `10:00h - 14:00h | 16:30h - 20:00h` | Horario de lunes a viernes |
-| Horario Sábado | Texto corto | `10:00h - 14:00h` | Horario del sábado |
-| Horario Domingo | Texto corto | `Cerrado` | Horario del domingo |
-| URL Dossier | URL | `https://drive.google.com/...` | Enlace al PDF del dossier descargable |
-| URL Memoria Calidades | URL | `https://drive.google.com/...` | Enlace a la memoria de calidades |
-| URL Aviso Legal | URL | `/aviso-legal` | Enlace pie de página |
-| URL Privacidad | URL | `/privacidad` | Enlace pie de página y formulario |
-| URL Política de Cookies | URL | `/cookies` | Enlace pie de página |
-| Latitud | Número | `39.5912` | Coordenada para el mapa *(futuro)* |
-| Longitud | Número | `-0.3990` | Coordenada para el mapa *(futuro)* |
-| Nombre Marca | Texto corto | `NARA MONCADA` | Nombre en el footer |
-| Crédito Footer | Texto corto | `by NARA Capital & GOOR.STUDIO` | Crédito bajo el nombre en el footer |
-| Copyright | Texto corto | `NARA Capital. Todos los derechos reservados.` | Texto de copyright |
-| Logo | Adjunto | *(subir imagen)* | Logo de la marca *(preparado para futura implementación)* |
+### Datos de la promoción
+
+| Campo | Contenido actual | Para qué sirve |
+|---|---|---|
+| Nombre Promoción | NARA Moncada | Aparece como título principal en la ficha y el footer |
+| Tagline Hero | Vanguardia y Diseño… | Texto pequeño en mayúsculas bajo el título del hero |
+| Descripción Hero | A un paso del CEU… | Primera línea de texto del hero |
+| Subtítulo Hero | 25 Viviendas de 1, 2… | Heading grande del hero |
+| Localización | Valencia, España | Botón/píldora de ubicación |
+| Precio Desde | 320.000€ | Precio mínimo en la ficha de la promoción |
+| Estado Comercialización | EN COMERCIALIZACIÓN | Badge de estado (aparece en verde) |
+
+### Vídeo y visita virtual
+
+| Campo | Instrucciones |
+|---|---|
+| URL Vídeo | Pega aquí el enlace de YouTube o Vimeo. El botón "Ver vídeo" aparece solo cuando tiene valor. |
+| URL Visita Virtual | Pega el enlace de Matterport u similar. El botón "Visita Virtual" aparece solo cuando tiene valor. |
+
+### Documentos descargables
+
+| Campo | Instrucciones |
+|---|---|
+| URL Dossier | Sube el PDF a Google Drive (con permiso "cualquiera con el enlace") y pega la URL aquí. |
+| URL Memoria Calidades | Igual que el dossier. |
+
+Cuando rellenes estos campos, los botones de descarga de la web pasarán de ser decorativos a ser enlaces reales.
+
+### Datos de contacto
+
+| Campo | Contenido actual |
+|---|---|
+| Teléfono | +34 900 123 456 |
+| Dirección Promoción | Moncada |
+| CP Promoción | 46113 |
+| Ciudad Promoción | Moncada, Valencia |
+| Dirección Oficina | Avenida de las Cortes Valencianas 58 |
+| CP Oficina | 46015 |
+| Ciudad Oficina | Valencia |
+| Horario L-V | 10:00h - 14:00h \| 16:30h - 20:00h |
+| Horario Sábado | 10:00h - 14:00h |
+| Horario Domingo | Cerrado |
+
+### Footer y legal
+
+| Campo | Instrucciones |
+|---|---|
+| Nombre Marca | Texto grande en el footer (ej. NARA MONCADA) |
+| Crédito Footer | Línea pequeña bajo el nombre (ej. by NARA Capital & GOOR.STUDIO) |
+| Copyright | Texto del copyright (el año se añade automáticamente) |
+| URL Aviso Legal | Enlace del pie de página |
+| URL Privacidad | Enlace del pie de página y del formulario de contacto |
+| URL Política de Cookies | Enlace del pie de página |
 
 ---
 
 ## Tabla 2 — SECCIONES
 
-> Un registro por sección. La columna **Clave** es obligatoria e identifica a qué sección de la web corresponde.
+Cada fila es una sección de la web. La columna **Clave** identifica a qué sección corresponde — **no la cambies nunca**.
 
-**Valores posibles de Clave:**
+### Registros existentes
 
 | Clave | Sección en la web |
 |---|---|
-| `hero` | Pantalla principal (hero) |
+| `hero` | Pantalla de entrada (hero) |
 | `nosotros` | Sección "Sobre nosotros" |
 | `proyecto` | Sección "Diseño y Exclusividad" |
-| `amenidades` | Sección de amenidades con fondo oscuro |
+| `amenidades` | Sección de amenidades (fondo oscuro con iconos) |
 | `detalles` | Sección "Espacios comunes Planta Baja" |
-| `propiedad` | Ficha de tipologías, formulario y ubicación |
+| `propiedad` | Ficha con tipologías, formulario de contacto y mapa |
+| `galeria` | (Solo para organización interna de imágenes) |
 
-**Campos disponibles por registro:**
+### Campos disponibles
 
-| Campo | Tipo | Descripción |
-|---|---|---|
-| Clave | Texto corto | Identificador único (ver tabla arriba) — **no cambiar** |
-| Etiqueta Superior | Texto corto | Texto pequeño en mayúsculas encima del título |
-| Título | Texto corto | Heading principal de la sección |
-| Subtítulo | Texto corto | Heading secundario (usado en el formulario de contacto) |
-| Párrafo 1 | Texto largo | Primer párrafo de descripción |
-| Párrafo 2 | Texto largo | Segundo párrafo (si aplica) |
-| Párrafo 3 | Texto largo | Tercer párrafo (si aplica) |
-| Activo | Casilla | Desmarca para usar el texto por defecto del código |
+| Campo | Para qué sirve |
+|---|---|
+| Etiqueta Superior | Texto pequeño en mayúsculas que aparece sobre el título |
+| Título | El heading principal de la sección |
+| Subtítulo | Heading secundario (en `propiedad` es el título del formulario) |
+| Párrafo 1 | Primer bloque de texto |
+| Párrafo 2 | Segundo bloque de texto |
+| Párrafo 3 | Tercer bloque de texto |
+| Activo | Si está desmarcado, se usa el texto por defecto del código |
+
+### Ejemplo: cómo cambiar el texto de "Sobre nosotros"
+
+1. Abre la tabla **SECCIONES**
+2. Busca la fila con Clave = `nosotros`
+3. Edita el campo **Párrafo 1** o **Párrafo 2**
+4. Guarda y recarga la web
 
 ---
 
 ## Tabla 3 — IMAGENES
 
-> Cada registro es una imagen. Se organizan por sección con el campo **Sección**.
+Cada registro es una imagen. El campo **Sección** indica dónde aparece en la web.
 
-**Valores posibles de Sección:**
+### Imágenes actuales
 
-| Sección | Dónde aparece |
-|---|---|
-| `hero` | Imagen de fondo del hero |
-| `nosotros` | Imagen de la sección "Sobre nosotros" |
-| `proyecto` | Imagen de la sección "Proyecto" |
-| `amenidades` | Imagen de fondo de la sección amenidades |
-| `detalles` | Imagen de la sección zonas comunes |
-| `galeria` | Imágenes del carrusel principal de la ficha |
-
-**Campos:**
-
-| Campo | Tipo | Descripción |
+| Nombre | Sección | Imagen |
 |---|---|---|
-| Nombre | Texto corto | Nombre descriptivo (solo para tu referencia) |
-| Sección | Texto corto | A qué sección pertenece (ver tabla arriba) |
-| Imagen | Adjunto | **Sube aquí la imagen directamente** |
-| Texto Alt | Texto corto | Texto alternativo para accesibilidad/SEO |
-| Orden | Número | Orden de aparición (1, 2, 3…) — importante para la galería |
-| Activo | Casilla | Desmarcar para ocultar la imagen |
+| HeroImage | hero | Render cálido (fondo pantalla principal) |
+| Nosotros – Alzado | nosotros | Alzado frontal |
+| Proyecto – Fachada | proyecto | Alzado lateral |
+| Amenidades – Piscina | amenidades | Piscina (fondo sección amenidades) |
+| Detalles – Zonas comunes | detalles | Zonas comunes |
+| Galería 1 – Render | galeria | Render interior cálido |
+| Galería 2 – Alzado | galeria | Fachada principal |
+| Galería 3 – Alzado post. | galeria | Fachada posterior |
+| Galería 4 – Patio | galeria | Patio interior |
+| Galería 5 – Piscina | galeria | Piscina comunitaria |
+| Galería 6 – Gimnasio | galeria | Sala de gimnasio |
+| Galería 7 – Terraza | galeria | Terraza tipo |
+| Galería 8 – Ático | galeria | Terraza ático |
 
-> **Consejo galería:** Crea varios registros con `Sección = galeria` y pon el `Orden` que quieras. Así controlas completamente el carrusel.
+### Campos
+
+| Campo | Instrucciones |
+|---|---|
+| Nombre | Nombre descriptivo solo para tu referencia interna |
+| Sección | A qué parte de la web va. Vincula al registro de SECCIONES con la clave correspondiente |
+| Imagen | **Aquí se sube la foto.** Haz clic en el campo y arrastra o selecciona el archivo |
+| Texto Alt | Descripción breve de la imagen (mejora el SEO y la accesibilidad) |
+| Orden | Número que define el orden de aparición. Importante en la galería (1 aparece primero) |
+| Activo | Desmarca para ocultar la imagen sin borrarla |
+
+### Cómo cambiar una imagen de sección
+
+1. Abre **IMAGENES**
+2. Busca el registro por su nombre (ej. "HeroImage" para el fondo del hero)
+3. Haz clic en el campo **Imagen**
+4. Borra el archivo actual y sube el nuevo
+5. Recarga la web
+
+### Cómo añadir una imagen al carrusel
+
+1. Abre **IMAGENES**
+2. Haz clic en **+ Crear nuevo**
+3. Rellena:
+   - **Nombre**: lo que quieras (ej. "Galería 9 – Salón")
+   - **Sección**: vincula al registro con Clave = `galeria`
+   - **Imagen**: sube el archivo
+   - **Orden**: el número que ocupa en el carrusel (ej. 9)
+   - **Activo**: marcado ✓
+4. Recarga la web y aparecerá en el carrusel
+
+### Cómo quitar una imagen del carrusel sin borrarla
+
+1. Busca el registro en **IMAGENES**
+2. Desmarca el campo **Activo**
+3. La imagen desaparece de la web pero el registro sigue guardado
 
 ---
 
 ## Tabla 4 — AMENIDADES
 
-> Cada registro es un ítem del grid de amenidades (la sección con fondo oscuro).
+Controla el grid de servicios de la sección con fondo oscuro.
 
-| Campo | Tipo | Descripción |
-|---|---|---|
-| Nombre | Texto corto | Nombre que aparece bajo el icono (ej. `Piscina`) |
-| Icono | Texto corto | Nombre del icono (ver lista abajo) |
-| Orden | Número | Orden de aparición en el grid |
-| Activo | Casilla | Desmarcar para ocultar |
+### Registros actuales
 
-**Iconos disponibles** (escribe exactamente uno de estos valores):
-
-| Valor | Icono |
+| Nombre | Icono |
 |---|---|
-| `sun` | Sol (piscina) |
-| `dumbbell` | Mancuerna (gimnasio) |
-| `building` | Edificio (sala) |
-| `car` | Coche (garaje/parking) |
-| `waves` | Olas |
-| `bike` | Bici |
-| `trees` | Árboles/naturaleza |
-| `shield` | Escudo/seguridad |
-| `coffee` | Café/zona de descanso |
-| `wifi` | WiFi |
+| Piscina | sun |
+| Gimnasio | dumbbell |
+| Sala Polivalente | building |
+| Garajes y Trasteros | car |
+
+### Iconos disponibles
+
+Escribe exactamente uno de estos valores en el campo **Icono**:
+
+| Valor | Icono que muestra |
+|---|---|
+| `sun` | Sol — para piscina, zonas exteriores |
+| `dumbbell` | Mancuerna — para gimnasio |
+| `building` | Edificio — para salas |
+| `car` | Coche — para garajes y parking |
+| `waves` | Olas — para spa o zona acuática |
+| `bike` | Bicicleta — para carril bici o zona deportiva |
+| `trees` | Árboles — para jardines o zonas verdes |
+| `shield` | Escudo — para seguridad o vigilancia |
+| `coffee` | Taza — para cafetería o coworking |
+| `wifi` | WiFi — para zonas conectadas |
+
+### Cómo añadir una nueva amenidad
+
+1. Abre **AMENIDADES**
+2. Crea un nuevo registro
+3. Rellena **Nombre**, **Icono** (uno de los valores de arriba) y **Orden**
+4. Marca **Activo** ✓
+5. Recarga la web
+
+### Cómo reordenar las amenidades
+
+Cambia el número del campo **Orden** en cada registro. El valor más bajo aparece primero.
 
 ---
 
-## Tabla 5 — ZONAS_COMUNES
+## Tabla 5 — ZONAS\_COMUNES
 
-> Cada registro es una zona común con su descripción detallada (sección "Espacios comunes Planta Baja").
+Controla la lista de zonas comunes con sus descripciones detalladas.
 
-| Campo | Tipo | Descripción |
-|---|---|---|
-| Nombre | Texto corto | Nombre de la zona (ej. `Piscina Comunitaria`) |
-| Descripción | Texto largo | Descripción completa que aparece en la web |
-| Orden | Número | Orden de aparición |
-| Activo | Casilla | Desmarcar para ocultar |
+### Registros actuales
+
+| Nombre | Descripción (resumida) |
+|---|---|
+| Piscina Comunitaria | Zona de baño exclusiva… |
+| Gimnasio | Zonas deportivas equipadas… |
+| Sala Polivalente | Espacio flexible para ocio… |
+| Trasteros y Garajes | 25 plazas de aparcamiento… |
+
+### Campos
+
+| Campo | Instrucciones |
+|---|---|
+| Nombre | Título de la zona que aparece en negrita |
+| Descripción | Texto completo que aparece bajo el título |
+| Orden | Orden de aparición (1 sale primero) |
+| Activo | Desmarca para ocultar |
 
 ---
 
 ## Tabla 6 — NAVEGACION
 
-> Cada registro es un ítem del menú flotante superior.
+Controla los botones del menú flotante que aparece al hacer scroll.
 
-| Campo | Tipo | Descripción |
+### Registros actuales
+
+| Etiqueta | ID Sección | Orden |
 |---|---|---|
-| Etiqueta | Texto corto | Texto del botón del menú (ej. `NOSOTROS`) |
-| ID Sección | Texto corto | ID de la sección a la que enlaza (ej. `nosotros`) |
-| Orden | Número | Orden en el menú |
-| Activo | Casilla | Desmarcar para quitar del menú |
+| INICIO | inicio | 1 |
+| NOSOTROS | nosotros | 2 |
+| PROYECTO | proyecto | 3 |
+| PROMOCIÓN | promocion | 4 |
+| CONTACTO | contacto | 5 |
+
+> **Importante:** El campo **ID Sección** debe coincidir exactamente con el ID de la sección HTML en el código. No cambies estos valores sin consultarlo con el equipo técnico.
 
 ---
 
-## Tablas existentes (TIPOLOGÍAS y UNIDADES)
+## Tablas 7 y 8 — TIPOLOGÍAS y UNIDADES
 
-Estas tablas ya estaban funcionando. **No cambies su estructura.**
+Estas tablas controlan la tabla de precios y disponibilidad de la ficha.
 
-### TIPOLOGÍAS — campos relevantes
+### TIPOLOGÍAS — qué editar
 
-| Campo | Descripción |
+| Campo | Para qué sirve |
 |---|---|
-| Nombre | Nombre de la tipología |
+| Nombre | Nombre de la tipología (ej. "Tipo A – 1 Dormitorio") |
 | Uds. Totales | Número de unidades de esa tipología |
-| Rango Tamaño | Texto con el rango de m² |
-| Zonas Comunes | Texto describiendo qué zonas comparte |
-| Planos de Tipología | Adjunta el PDF del plano — aparece como descarga |
+| Rango Tamaño | Texto con el rango de m² (ej. "65 – 80 m²") |
+| Zonas Comunes | Qué zonas comunes incluye |
+| Planos de Tipología | Sube aquí el PDF del plano — aparecerá como enlace de descarga |
 
-### UNIDADES — campos relevantes
+### UNIDADES — qué editar
 
-| Campo | Descripción |
+| Campo | Para qué sirve |
 |---|---|
-| Referencia | Código de la unidad (ej. `A-101`) |
-| Tipología | Vincula a la tipología correspondiente |
-| Planta | Planta del piso |
+| Referencia | Código del piso (ej. "A-101") |
+| Tipología | Vincula al registro de TIPOLOGÍAS correspondiente |
+| Planta | Número de planta |
 | Habitaciones | Número de habitaciones |
 | m² Construidos | Metros cuadrados construidos |
-| m² Terraza | Metros de terraza (si tiene) |
-| Precio de Venta (PVP) | Precio en euros (número, sin símbolo) |
-| Estado | `Disponible`, `Reservado`, o cualquier otro valor (aparece en rojo) |
+| m² Terraza | Metros de terraza (dejar vacío si no tiene) |
+| Precio de Venta (PVP) | Precio en euros, solo el número (ej. 320000) |
+| Estado | `Disponible` → verde / `Reservado` → amarillo / cualquier otro → rojo |
+
+### Cambiar el estado de un piso
+
+1. Abre **UNIDADES**
+2. Busca la unidad por su **Referencia**
+3. Cambia el campo **Estado** a `Reservado` o el valor que corresponda
+4. Recarga la web — el badge de color cambia automáticamente
 
 ---
 
-## Flujo de trabajo recomendado
+## Flujos de trabajo habituales
 
-### Para cambiar un texto
-1. Abre la tabla **SECCIONES** o **CONFIGURACION**
-2. Encuentra el campo que quieres cambiar
-3. Edita el valor
-4. Recarga la web — el cambio es inmediato
+### "Quiero cambiar el precio de salida"
 
-### Para cambiar una imagen
-1. Abre la tabla **IMAGENES**
-2. Encuentra el registro de la sección que quieres cambiar (o crea uno nuevo)
-3. En el campo **Imagen**, haz clic y sube el nuevo archivo
-4. Asegúrate de que el campo **Sección** tiene el valor correcto
-5. Marca **Activo** como ✓
-6. Recarga la web
+1. Abre **CONFIGURACION**
+2. Edita el campo **Precio Desde** (ej. "desde 295.000€")
+3. Recarga la web
 
-### Para actualizar precios o estado de unidades
-1. Abre la tabla **UNIDADES**
-2. Encuentra la unidad por su **Referencia**
-3. Cambia el **Estado** o el **Precio de Venta (PVP)**
-4. Recarga la web
+### "Quiero subir el dossier en PDF"
 
-### Para añadir una nueva amenidad
-1. Abre la tabla **AMENIDADES**
+1. Sube el PDF a Google Drive y copia el enlace compartido (acceso "cualquiera con el enlace")
+2. Abre **CONFIGURACION**
+3. Pega la URL en el campo **URL Dossier**
+4. Recarga la web — el botón de descarga se activa automáticamente
+
+### "Quiero añadir un render nuevo al carrusel"
+
+1. Abre **IMAGENES**
 2. Crea un nuevo registro
-3. Rellena **Nombre**, **Icono** (uno de los valores de la lista), y **Orden**
-4. Marca **Activo** como ✓
+3. Campo **Sección**: vincula al registro con Clave = `galeria`
+4. Campo **Imagen**: sube el render
+5. Campo **Orden**: pon el número que quieras (ej. 9 para que vaya al final)
+6. Marca **Activo** ✓
+7. Recarga la web
+
+### "Quiero marcar un piso como vendido"
+
+1. Abre **UNIDADES**
+2. Encuentra el piso por su **Referencia**
+3. Cambia **Estado** a `Vendido`
+4. Recarga la web — aparece con badge rojo
+
+### "Quiero añadir el vídeo del proyecto"
+
+1. Sube el vídeo a YouTube o Vimeo y copia la URL
+2. Abre **CONFIGURACION**
+3. Pega la URL en **URL Vídeo**
+4. Recarga la web — aparece el botón "Ver vídeo" sobre el carrusel
+
+### "Quiero cambiar el teléfono de contacto"
+
+1. Abre **CONFIGURACION**
+2. Edita el campo **Teléfono**
+3. Recarga la web
 
 ---
 
-## Notas importantes
+## Notas técnicas importantes
 
-- **Imágenes**: Sube directamente en Airtable como adjunto. Formato recomendado: JPG o WebP, máximo 5 MB por imagen para buena velocidad de carga.
-- **Si un campo está vacío**: La web usa el texto por defecto que tenía antes. No se rompe nada.
-- **Casilla "Activo"**: Cuando está desmarcada, ese contenido se ignora y la web usa los valores por defecto del código.
-- **Orden**: Los números no tienen que ser consecutivos. Puedes usar 10, 20, 30… para dejar espacio a inserciones futuras.
+- **Imágenes**: el formato recomendado es JPG o PNG, máximo 5 MB por archivo para una buena velocidad de carga. Las imágenes se sirven desde los servidores de Airtable.
+- **Orden**: no tiene que ser consecutivo. Puedes usar 10, 20, 30… para dejar espacio a inserciones futuras sin tener que renumerar todo.
+- **Campo Activo desmarcado**: el registro se ignora y la web usa el valor por defecto. Nunca borra nada — solo lo oculta.
+- **Sección del campo Imagen**: siempre vincula a un registro de la tabla SECCIONES. Si no ves la opción correcta en el desplegable, busca por la Clave (hero, nosotros, proyecto…).
+- **Cambios en tiempo real**: los cambios son visibles al recargar la web. No hay caché ni demoras.
+
+---
+
+## Contacto técnico
+
+Para cambios estructurales (nuevas secciones, nuevos campos, cambios de diseño), contacta con el equipo de desarrollo.

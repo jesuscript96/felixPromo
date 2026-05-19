@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ContentProvider } from './context/ContentContext';
+import { ContentProvider, useContent } from './context/ContentContext';
 import Hero from './components/Hero';
 import FloatingNav from './components/FloatingNav';
 import AboutSection from './components/AboutSection';
@@ -13,19 +13,40 @@ import DetailsSection from './components/DetailsSection';
 import PropertyDetails from './components/PropertyDetails';
 import Footer from './components/Footer';
 
+function AppContent() {
+  const { loading } = useContent();
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-brand-bg flex items-center justify-center z-50">
+        <div className="flex flex-col items-center gap-8">
+          <div className="w-14 h-14 border-2 border-brand-accent border-t-transparent rounded-full animate-spin" />
+          <p className="font-heading text-2xl text-brand-accent tracking-[0.3em] uppercase">
+            Nara Moncada
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="font-sans bg-brand-bg text-brand-text selection:bg-brand-accent selection:text-white">
+      <FloatingNav />
+      <Hero />
+      <AboutSection />
+      <ProjectSection />
+      <AmenitiesSection />
+      <DetailsSection />
+      <PropertyDetails />
+      <Footer />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <ContentProvider>
-      <div className="font-sans bg-brand-bg text-brand-text selection:bg-brand-accent selection:text-white">
-        <FloatingNav />
-        <Hero />
-        <AboutSection />
-        <ProjectSection />
-        <AmenitiesSection />
-        <DetailsSection />
-        <PropertyDetails />
-        <Footer />
-      </div>
+      <AppContent />
     </ContentProvider>
   );
 }
