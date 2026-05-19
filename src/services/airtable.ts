@@ -115,6 +115,7 @@ export interface AmenidadContent {
     id: string;
     Nombre?: string;
     Icono?: string;
+    Imagen?: AirtableAttachment[];
     Orden?: number;
     Activo?: boolean;
 }
@@ -124,6 +125,7 @@ export interface ZonaComunContent {
     id: string;
     Nombre?: string;
     Descripción?: string;
+    Imagen?: AirtableAttachment[];
     Orden?: number;
     Activo?: boolean;
 }

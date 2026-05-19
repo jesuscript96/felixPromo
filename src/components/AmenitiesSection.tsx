@@ -1,11 +1,7 @@
-import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Sun, Dumbbell, Building, Car, Waves, Bike, Trees, ShieldCheck, Coffee, Wifi, ChevronLeft, ChevronRight, type LucideIcon } from 'lucide-react';
+import { Sun, Dumbbell, Building, Car, Waves, Bike, Trees, ShieldCheck, Coffee, Wifi, type LucideIcon } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import amenitiesBgFallback from '../images/Residencial Terra - 2.png';
-import fallback1 from '../images/Residencial San Blas - 2.jpg';
-import fallback2 from '../images/Residencial Terra.png';
-import fallback3 from '../images/Residencial Terra - 2.png';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   sun: Sun,
@@ -38,27 +34,8 @@ export default function AmenitiesSection() {
   const s = secciones['amenidades'] ?? {};
   const bgUrl = imagenes['amenidades']?.[0]?.Imagen?.[0]?.url ?? amenitiesBgFallback;
 
-  const carouselFromAirtable = (imagenes['amenidades'] ?? [])
-    .slice(1)
-    .map((img) => ({ url: img.Imagen?.[0]?.url ?? '', alt: img['Texto Alt'] ?? '' }))
-    .filter((img) => img.url);
-
-  const carouselImages =
-    carouselFromAirtable.length > 0
-      ? carouselFromAirtable
-      : [
-          { url: fallback1, alt: 'Zona común' },
-          { url: fallback2, alt: 'Zona común' },
-          { url: fallback3, alt: 'Zona común' },
-        ];
-
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const maxIndex = Math.max(0, carouselImages.length - 3);
-  const prevSlide = () => setCarouselIndex((prev) => Math.max(0, prev - 1));
-  const nextSlide = () => setCarouselIndex((prev) => Math.min(maxIndex, prev + 1));
-
   return (
-    <section id="entorno" className="relative min-h-screen w-full overflow-hidden flex flex-col justify-center">
+    <section id="entorno" className="relative min-h-screen w-full overflow-hidden flex items-center">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${bgUrl})` }}
@@ -101,43 +78,6 @@ export default function AmenitiesSection() {
               </motion.div>
             );
           })}
-        </div>
-      </div>
-
-      {/* Carousel de fotos de amenidades */}
-      <div className="relative z-10 w-full pb-16 px-6 md:px-12 lg:px-16">
-        <div className="relative overflow-hidden">
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${carouselIndex * (100 / 3)}%)` }}
-          >
-            {carouselImages.map((img, i) => (
-              <div key={i} className="flex-shrink-0 w-1/3 px-2 h-52 md:h-64">
-                <img
-                  src={img.url}
-                  alt={img.alt}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
-          </div>
-
-          {carouselIndex > 0 && (
-            <button
-              onClick={prevSlide}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm p-3 text-white transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-          )}
-          {carouselIndex < maxIndex && (
-            <button
-              onClick={nextSlide}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm p-3 text-white transition-colors"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          )}
         </div>
       </div>
     </section>
