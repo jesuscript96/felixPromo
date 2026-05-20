@@ -161,6 +161,43 @@ const fetchFromAirtable = async <T>(tableName: string): Promise<T[]> => {
     }
 };
 
+// ─── Lead submission ─────────────────────────────────────────────────────────
+
+export interface LeadData {
+    nombre: string;
+    apellidos: string;
+    telefono: string;
+    email: string;
+    aceptaMarketing: boolean;
+}
+
+export const submitLead = async (lead: LeadData): Promise<boolean> => {
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/LEADS`;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${AIRTABLE_TOKEN}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                fields: {
+                    Nombre: lead.nombre,
+                    Apellidos: lead.apellidos,
+                    'Teléfono': lead.telefono,
+                    Email: lead.email,
+                    'Acepta Marketing': lead.aceptaMarketing,
+                    Estado: 'Nuevo',
+                },
+            }),
+        });
+        return response.ok;
+    } catch (error) {
+        console.error('Error enviando lead a Airtable:', error);
+        return false;
+    }
+};
+
 // ─── Exports ────────────────────────────────────────────────────────────────
 
 export const fetchTypologies = () => fetchFromAirtable<Typology>('TIPOLOGÍAS');

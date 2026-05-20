@@ -1,10 +1,11 @@
-import { useState, useEffect, Fragment } from 'react';
-import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Phone, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect, Fragment, type ChangeEvent, type FormEvent } from 'react';
+import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Phone, Clock, ChevronDown, ChevronUp, CheckCircle, AlertCircle } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import img1Fallback from '../images/Residencial San Blas - 2.jpg';
 import img2Fallback from '../images/Residencial Terra.png';
 import img3Fallback from '../images/Residencial Terra - 2.png';
 import img4Fallback from '../images/Residencial San Blas - 3.jpg';
-import { fetchTypologies, fetchUnits, Typology, Unit } from '../services/airtable';
+import { fetchTypologies, fetchUnits, submitLead, Typology, Unit } from '../services/airtable';
 import { useContent } from '../context/ContentContext';
 
 const FALLBACK_IMAGES = [img1Fallback, img2Fallback, img3Fallback, img4Fallback];
@@ -75,6 +76,45 @@ export default function PropertyDetails() {
 
   const getUnitsForTypology = (typologyId: string) =>
     units.filter((u) => u.Tipología?.includes(typologyId));
+
+  // Formulario de contacto
+  const [form, setForm] = useState({ nombre: '', apellidos: '', telefono: '', email: '', privacidad: false, aceptaMarketing: false });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    const templateParams = {
+      nombre: form.nombre,
+      apellidos: form.apellidos,
+      telefono: form.telefono,
+      email: form.email,
+      to_email: form.email,
+      acepta_marketing: form.aceptaMarketing ? 'Sí' : 'No',
+      fecha: new Date().toLocaleString('es-ES'),
+      proyecto: config['Nombre Promoción'] ?? 'NARA Moncada',
+      telefono_contacto: config['Teléfono'] ?? '+34 900 123 456',
+      url_privacidad: config['URL Privacidad'] ?? '#',
+    };
+    try {
+      await Promise.all([
+        submitLead({ nombre: form.nombre, apellidos: form.apellidos, telefono: form.telefono, email: form.email, aceptaMarketing: form.aceptaMarketing }),
+        emailjs.send(import.meta.env.VITE_EMAILJS_SERVICE_ID, import.meta.env.VITE_EMAILJS_TEMPLATE_OWNER_ID, templateParams),
+        emailjs.send(import.meta.env.VITE_EMAILJS_SERVICE_ID, import.meta.env.VITE_EMAILJS_TEMPLATE_USER_ID, templateParams),
+      ]);
+      setSubmitStatus('success');
+    } catch {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Mapa
   const urlMaps = config['URL_maps'];
@@ -204,34 +244,51 @@ export default function PropertyDetails() {
                 {s['Párrafo 1'] ?? 'Déjanos tus datos y nos pondremos en contacto contigo lo antes posible.'}
               </p>
 
-              <form className="flex flex-col gap-4">
-                <input type="text" placeholder="Nombre*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
-                <input type="text" placeholder="Apellidos*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
-                <input type="tel" placeholder="Teléfono*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
-                <input type="email" placeholder="E-mail*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
-
-                <div className="mt-4 flex flex-col gap-3">
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <input type="checkbox" required className="mt-1 accent-brand-text" />
-                    <span className="text-xs font-light text-brand-text/80 group-hover:text-brand-text">
-                      He leído y acepto los{' '}
-                      <a href={config['URL Privacidad'] ?? '#'} className="underline hover:text-brand-accent">
-                        Términos, Condiciones y Política de Privacidad
-                      </a>.*
-                    </span>
-                  </label>
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <input type="checkbox" className="mt-1 accent-brand-text" />
-                    <span className="text-xs font-light text-brand-text/80 group-hover:text-brand-text">
-                      Autorizo el envío de publicidad y promociones.
-                    </span>
-                  </label>
+              {submitStatus === 'success' ? (
+                <div className="flex flex-col items-center gap-4 py-8 text-center">
+                  <CheckCircle className="w-12 h-12 text-brand-accent" />
+                  <p className="font-medium text-lg">¡Solicitud recibida!</p>
+                  <p className="text-sm font-light text-brand-text/70">
+                    Te hemos enviado una confirmación a <span className="font-medium">{form.email}</span>. Nos pondremos en contacto contigo lo antes posible.
+                  </p>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <input type="text" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
+                  <input type="text" name="apellidos" value={form.apellidos} onChange={handleChange} placeholder="Apellidos*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
+                  <input type="tel" name="telefono" value={form.telefono} onChange={handleChange} placeholder="Teléfono*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
+                  <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="E-mail*" required className="w-full border-b border-brand-text/20 py-3 bg-transparent focus:outline-none focus:border-brand-text transition-colors font-light text-sm" />
 
-                <button type="submit" className="mt-6 flex items-center justify-center gap-2 bg-brand-accent text-brand-bg py-4 font-medium tracking-widest uppercase text-sm hover:bg-brand-accent/90 transition-colors">
-                  <Mail className="w-4 h-4" /> Enviar
-                </button>
-              </form>
+                  <div className="mt-4 flex flex-col gap-3">
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input type="checkbox" name="privacidad" checked={form.privacidad} onChange={handleChange} required className="mt-1 accent-brand-text" />
+                      <span className="text-xs font-light text-brand-text/80 group-hover:text-brand-text">
+                        He leído y acepto los{' '}
+                        <a href={config['URL Privacidad'] ?? '#'} className="underline hover:text-brand-accent">
+                          Términos, Condiciones y Política de Privacidad
+                        </a>.*
+                      </span>
+                    </label>
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input type="checkbox" name="aceptaMarketing" checked={form.aceptaMarketing} onChange={handleChange} className="mt-1 accent-brand-text" />
+                      <span className="text-xs font-light text-brand-text/80 group-hover:text-brand-text">
+                        Autorizo el envío de publicidad y promociones.
+                      </span>
+                    </label>
+                  </div>
+
+                  {submitStatus === 'error' && (
+                    <div className="flex items-center gap-2 text-red-600 text-xs font-light">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>Ha ocurrido un error. Por favor, inténtalo de nuevo o llámanos directamente.</span>
+                    </div>
+                  )}
+
+                  <button type="submit" disabled={isSubmitting} className="mt-6 flex items-center justify-center gap-2 bg-brand-accent text-brand-bg py-4 font-medium tracking-widest uppercase text-sm hover:bg-brand-accent/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    <Mail className="w-4 h-4" /> {isSubmitting ? 'Enviando…' : 'Enviar'}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
