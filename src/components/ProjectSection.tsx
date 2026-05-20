@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
@@ -14,6 +14,22 @@ export default function ProjectSection() {
   const { secciones, zonasComunes } = useContent();
   const s = secciones['proyecto'] ?? {};
   const [activeIndex, setActiveIndex] = useState(2);
+  const [isXl, setIsXl] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1280);
+
+  useEffect(() => {
+    const handler = () => setIsXl(window.innerWidth >= 1280);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
+  const cardSizes = {
+    activeW: isXl ? '44%' : '40%',
+    activeH: isXl ? 600 : 480,
+    d1W: isXl ? '18%' : '16%',
+    d1H: isXl ? 420 : 330,
+    d2W: isXl ? '12%' : '10%',
+    d2H: isXl ? 300 : 230,
+  };
 
   const zones = zonasComunes.map((z, i) => ({
     ...z,
@@ -24,22 +40,22 @@ export default function ProjectSection() {
   const next = () => setActiveIndex((i) => Math.min(zones.length - 1, i + 1));
 
   return (
-    <section id="proyecto" className="py-24 bg-brand-bg overflow-hidden">
+    <section id="proyecto" className="py-24 xl:py-36 bg-brand-bg overflow-hidden">
 
       {/* Cabecera */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 mb-16">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 xl:px-32 mb-16 xl:mb-24">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-4xl md:text-5xl font-heading font-medium leading-tight mb-8 text-brand-text">
+          <h2 className="text-4xl md:text-5xl xl:text-6xl 2xl:text-7xl font-heading font-medium leading-tight mb-8 xl:mb-12 text-brand-text">
             {s.Título ?? 'Diseño y Exclusividad'}
-            <div className="w-32 h-[1px] bg-brand-accent mt-8" />
+            <div className="w-32 xl:w-40 h-[1px] bg-brand-accent mt-8" />
           </h2>
           {s['Párrafo 1'] && (
-            <p className="text-lg font-light leading-relaxed text-brand-text/80 max-w-2xl">
+            <p className="text-lg xl:text-xl font-light leading-relaxed text-brand-text/80 max-w-2xl xl:max-w-3xl">
               {s['Párrafo 1']}
             </p>
           )}
@@ -57,8 +73,8 @@ export default function ProjectSection() {
               <motion.div
                 key={zone.id}
                 animate={{
-                  width: dist > 2 ? '0%' : isActive ? '40%' : dist === 1 ? '16%' : '10%',
-                  height: dist > 2 ? 0 : isActive ? 480 : dist === 1 ? 330 : 230,
+                  width: dist > 2 ? '0%' : isActive ? cardSizes.activeW : dist === 1 ? cardSizes.d1W : cardSizes.d2W,
+                  height: dist > 2 ? 0 : isActive ? cardSizes.activeH : dist === 1 ? cardSizes.d1H : cardSizes.d2H,
                   opacity: dist > 2 ? 0 : isActive ? 1 : dist === 1 ? 0.72 : 0.5,
                 }}
                 style={{ pointerEvents: dist > 2 ? 'none' : 'auto', minWidth: 0 }}

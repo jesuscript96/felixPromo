@@ -15,27 +15,27 @@ export default function Hero() {
       >
       </div>
 
-      <div className="relative z-10 flex flex-col justify-center h-full px-6 md:px-12 lg:px-24 pb-32">
+      <div className="relative z-10 flex flex-col justify-center h-full px-6 md:px-12 lg:px-24 xl:px-32 pb-32 xl:pb-48">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="max-w-3xl text-white"
+          className="max-w-3xl xl:max-w-4xl 2xl:max-w-5xl text-white"
         >
-          <p className="text-xs md:text-sm tracking-[0.2em] uppercase mb-2">
+          <p className="text-xs md:text-sm xl:text-base tracking-[0.2em] uppercase mb-2">
             {s['Etiqueta Superior'] ?? 'Promoción'}
           </p>
-          <h1 className="text-[54px] md:text-[86px] font-heading font-medium mb-2 tracking-tight">
+          <h1 className="text-[54px] md:text-[86px] xl:text-[110px] 2xl:text-[130px] font-heading font-medium mb-2 tracking-tight leading-none">
             {config['Nombre Promoción'] ?? 'NARA Moncada'}
           </h1>
-          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-light mb-12 opacity-90">
+          <p className="text-xs md:text-sm xl:text-base tracking-[0.3em] uppercase font-light mb-12 xl:mb-16 opacity-90">
             {config['Tagline Hero'] ?? 'Vanguardia y Diseño en el eje norte de Valencia'}
           </p>
 
-          <p className="text-base md:text-lg font-light mb-4">
+          <p className="text-base md:text-lg xl:text-xl font-light mb-4">
             {config['Descripción Hero'] ?? 'A un paso del CEU y a 20 minutos de Valencia'}
           </p>
-          <h2 className="text-[32px] md:text-[43px] font-heading font-medium leading-tight mb-10">
+          <h2 className="text-[32px] md:text-[43px] xl:text-[56px] 2xl:text-[64px] font-heading font-medium leading-tight mb-10 xl:mb-14">
             {config['Subtítulo Hero'] ?? '25 Viviendas de 1, 2 dormitorios y Áticos'}
           </h2>
 

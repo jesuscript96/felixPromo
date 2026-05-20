@@ -94,12 +94,12 @@ export default function PropertyDetails() {
   const horarioDom = config['Horario Domingo'] ?? 'Cerrado';
 
   return (
-    <section id="promocion" className="py-24 bg-brand-bg text-brand-text">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
+    <section id="promocion" className="py-24 xl:py-36 bg-brand-bg text-brand-text">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 xl:px-32">
 
         {/* 1. Cabecera */}
         <div className="mb-16 border-b border-brand-text/10 pb-8">
-          <h1 className="text-5xl md:text-6xl font-heading font-medium mb-6">
+          <h1 className="text-5xl md:text-6xl xl:text-7xl 2xl:text-8xl font-heading font-medium mb-6 xl:mb-8">
             {config['Nombre Promoción'] ?? 'NARA Moncada'}
           </h1>
 
@@ -131,7 +131,7 @@ export default function PropertyDetails() {
         </div>
 
         {/* 2. Galería + Formulario */}
-        <div className="flex flex-col lg:flex-row gap-12 mb-24">
+        <div className="flex flex-col lg:flex-row gap-12 xl:gap-16 mb-24 xl:mb-32">
 
           {/* Galería */}
           <div className="w-full lg:w-2/3 flex flex-col gap-4">
@@ -237,8 +237,8 @@ export default function PropertyDetails() {
         </div>
 
         {/* 3. Tipologías */}
-        <div className="mb-24">
-          <h2 className="text-3xl font-heading font-medium mb-8">
+        <div className="mb-24 xl:mb-32">
+          <h2 className="text-3xl xl:text-4xl 2xl:text-5xl font-heading font-medium mb-8 xl:mb-12">
             {s.Título ?? 'Tipologías de viviendas'}
           </h2>
 
@@ -395,11 +395,11 @@ export default function PropertyDetails() {
 
         {/* 4. Ubicación y Contacto */}
         <div>
-          <h2 className="text-3xl font-heading font-medium mb-8">
+          <h2 className="text-3xl xl:text-4xl 2xl:text-5xl font-heading font-medium mb-8 xl:mb-12">
             {s['Etiqueta Superior'] ?? 'Ubicación de la promoción'}
           </h2>
 
-          <div className="relative w-full h-[450px] mb-12 overflow-hidden">
+          <div className="relative w-full h-[450px] xl:h-[600px] 2xl:h-[700px] mb-12 overflow-hidden">
             <iframe
               src={mapSrc}
               width="100%"
