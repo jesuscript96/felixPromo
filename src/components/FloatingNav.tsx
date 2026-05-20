@@ -12,6 +12,13 @@ export default function FloatingNav() {
       setIsScrolled(window.scrollY > 100);
 
       const sections = navegacion.map((item) => document.getElementById(item['ID Sección'] ?? ''));
+      const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 50;
+
+      if (atBottom && navegacion.length > 0) {
+        setActive(navegacion[navegacion.length - 1]['ID Sección'] ?? '');
+        return;
+      }
+
       const scrollPosition = window.scrollY + window.innerHeight / 3;
 
       for (let i = sections.length - 1; i >= 0; i--) {
