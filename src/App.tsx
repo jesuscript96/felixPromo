@@ -3,28 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { ComponentType } from 'react';
 import { ContentProvider, useContent } from './context/ContentContext';
 import Hero from './components/Hero';
 import FloatingNav from './components/FloatingNav';
 import AboutSection from './components/AboutSection';
 import ProjectSection from './components/ProjectSection';
-import AmenitiesSection from './components/AmenitiesSection';
-import DetailsSection from './components/DetailsSection';
 import PropertyDetails from './components/PropertyDetails';
 import Footer from './components/Footer';
 
-const SECTION_COMPONENTS: Record<string, ComponentType> = {
-  hero: Hero,
-  nosotros: AboutSection,
-  proyecto: ProjectSection,
-  amenidades: AmenitiesSection,
-  detalles: DetailsSection,
-  propiedad: PropertyDetails,
-};
-
 function AppContent() {
-  const { loading, seccionesOrden } = useContent();
+  const { loading } = useContent();
 
   if (loading) {
     return (
@@ -42,10 +30,10 @@ function AppContent() {
   return (
     <div className="font-sans bg-brand-bg text-brand-text selection:bg-brand-accent selection:text-white">
       <FloatingNav />
-      {seccionesOrden.map((clave) => {
-        const Component = SECTION_COMPONENTS[clave];
-        return Component ? <Component key={clave} /> : null;
-      })}
+      <Hero />
+      <ProjectSection />
+      <PropertyDetails />
+      <AboutSection />
       <Footer />
     </div>
   );
