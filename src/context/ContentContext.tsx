@@ -149,20 +149,38 @@ export function ContentProvider({ children }: { children: ReactNode }) {
                     Object.entries(DEFAULT_SECCIONES).map(([k, v]) => [k, { id: `default-${k}`, ...v }])
                 ),
             };
-            const seccionesActivas = seccionesRaw.filter((s) => s.Activo !== false && s.Clave);
-            seccionesActivas.forEach((s) => {
-                seccionesMap[s.Clave!] = { ...seccionesMap[s.Clave!], ...s };
-            });
+            // Solo los registros activos actualizan el contenido
+            seccionesRaw
+                .filter((s) => s.Activo !== false && s.Clave)
+                .forEach((s) => {
+                    seccionesMap[s.Clave!] = { ...seccionesMap[s.Clave!], ...s };
+                });
 
-            // Orden de secciones: preserva el orden de Airtable,
-            // añade al final las que solo están en los defaults
-            const ordenAirtable = seccionesActivas.map((s) => s.Clave!);
-            const seccionesOrden = ordenAirtable.length > 0
-                ? [
-                    ...ordenAirtable,
-                    ...DEFAULT_SECCIONES_ORDEN.filter((c) => !ordenAirtable.includes(c)),
-                  ]
-                : DEFAULT_SECCIONES_ORDEN;
+            // Orden: todos los registros con Clave (Activo no afecta al orden)
+            const ordenAirtable = seccionesRaw
+                .filter((s) => s.Clave)
+                .map((s) => s.Clave!);
+
+            // Las secciones que no están en Airtable se insertan en su posición
+            // por defecto (no al final), usando el orden relativo de DEFAULT_SECCIONES_ORDEN
+            const seccionesOrden = (() => {
+                if (ordenAirtable.length === 0) return DEFAULT_SECCIONES_ORDEN;
+                const result = [...ordenAirtable];
+                const soloEnDefaults = DEFAULT_SECCIONES_ORDEN.filter((c) => !result.includes(c));
+                for (const clave of soloEnDefaults) {
+                    const defaultIdx = DEFAULT_SECCIONES_ORDEN.indexOf(clave);
+                    // Busca la primera sección que va DESPUÉS en el orden por defecto y ya está en result
+                    const siguienteEnResult = DEFAULT_SECCIONES_ORDEN
+                        .slice(defaultIdx + 1)
+                        .find((c) => result.includes(c));
+                    if (siguienteEnResult) {
+                        result.splice(result.indexOf(siguienteEnResult), 0, clave);
+                    } else {
+                        result.push(clave);
+                    }
+                }
+                return result;
+            })();
 
             // Mapa ID de registro → Clave, para resolver campos de tipo "linked record"
             // (Airtable autovincula el campo Sección si su nombre coincide con una tabla)
