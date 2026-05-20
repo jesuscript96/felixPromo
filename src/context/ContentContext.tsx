@@ -79,6 +79,7 @@ const DEFAULT_ZONAS: ZonaComunContent[] = [
     { id: 'z2', Nombre: 'Gimnasio', Descripción: 'Zonas deportivas equipadas para mantener un estilo de vida activo y saludable sin tener que salir del edificio.', Orden: 2, Activo: true },
     { id: 'z3', Nombre: 'Sala Polivalente', Descripción: 'Un espacio flexible y acogedor pensado para el ocio, reuniones de la comunidad, y celebraciones, potenciando la vida compartida.', Orden: 3, Activo: true },
     { id: 'z4', Nombre: 'Trasteros y Garajes', Descripción: '25 plazas de aparcamiento y trasteros privados, ofreciendo la máxima comodidad y seguridad en tu día a día.', Orden: 4, Activo: true },
+    { id: 'z5', Nombre: 'Terraza Comunitaria', Descripción: 'Amplias terrazas con vistas panorámicas, diseñadas para el descanso y el disfrute al aire libre en un entorno exclusivo.', Orden: 5, Activo: true },
 ];
 
 const DEFAULT_NAVEGACION: NavItem[] = [

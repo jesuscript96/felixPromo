@@ -9,6 +9,32 @@ import { useContent } from '../context/ContentContext';
 
 const FALLBACK_IMAGES = [img1Fallback, img2Fallback, img3Fallback, img4Fallback];
 
+function buildMapSrc(urlMaps: string | undefined, fallbackAddress: string): string {
+  const base = 'https://maps.google.com/maps';
+  const makeFallback = (q: string) =>
+    `${base}?q=${encodeURIComponent(q)}&t=h&z=15&ie=UTF8&iwloc=&output=embed`;
+
+  if (!urlMaps) return makeFallback(fallbackAddress);
+
+  try {
+    const url = new URL(urlMaps);
+    // Embed URL from Google Maps > Compartir > Incorporar (uses /embed path)
+    if (url.pathname.includes('/embed')) return urlMaps;
+    // Standard maps URL with q= query → convert to satellite embed
+    if (url.searchParams.has('q')) {
+      url.searchParams.set('t', 'h');
+      url.searchParams.set('output', 'embed');
+      url.searchParams.set('ie', 'UTF8');
+      url.searchParams.set('iwloc', '');
+      return url.toString();
+    }
+    return makeFallback(fallbackAddress);
+  } catch {
+    // Plain text address
+    return makeFallback(urlMaps);
+  }
+}
+
 export default function PropertyDetails() {
   const { config, secciones, imagenes } = useContent();
   const s = secciones['propiedad'] ?? {};
@@ -49,6 +75,11 @@ export default function PropertyDetails() {
 
   const getUnitsForTypology = (typologyId: string) =>
     units.filter((u) => u.Tipología?.includes(typologyId));
+
+  // Mapa
+  const urlMaps = config['URL_maps'];
+  const fallbackAddress = `${config['Dirección Promoción'] ?? 'Moncada'}, ${config['CP Promoción'] ?? '46113'}, ${config['Ciudad Promoción'] ?? 'Moncada, Valencia'}, España`;
+  const mapSrc = buildMapSrc(urlMaps, fallbackAddress);
 
   // Datos de contacto desde config
   const telefono = config['Teléfono'] ?? '+34 900 123 456';
@@ -370,7 +401,7 @@ export default function PropertyDetails() {
 
           <div className="relative w-full h-[450px] mb-12 overflow-hidden">
             <iframe
-              src="https://maps.google.com/maps?q=Moncada+Valencia+46113+Spain&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              src={mapSrc}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -380,16 +411,18 @@ export default function PropertyDetails() {
               title="Ubicación NARA Moncada"
               className="w-full h-full"
             />
-            <div className="absolute bottom-6 right-6">
-              <a
-                href="https://maps.app.goo.gl/ArKPwY9YHNMnSmpn8"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 bg-brand-accent text-brand-bg px-6 py-3 font-medium tracking-widest uppercase text-sm hover:bg-brand-highlight transition-colors shadow-xl"
-              >
-                <MapPin className="w-4 h-4" /> Ver en Google Maps
-              </a>
-            </div>
+            {urlMaps && (
+              <div className="absolute bottom-6 right-6">
+                <a
+                  href={urlMaps}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 bg-brand-accent text-brand-bg px-6 py-3 font-medium tracking-widest uppercase text-sm hover:bg-brand-highlight transition-colors shadow-xl"
+                >
+                  <MapPin className="w-4 h-4" /> Ver en Google Maps
+                </a>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-brand-text/10 pt-12">

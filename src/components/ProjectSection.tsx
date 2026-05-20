@@ -6,13 +6,14 @@ import fallback1 from '../images/Residencial San Blas - 2.jpg';
 import fallback2 from '../images/Residencial Terra.png';
 import fallback3 from '../images/Residencial Terra - 2.png';
 import fallback4 from '../images/Residencial San Blas - 3.jpg';
+import fallback5 from '../images/Residencial San Blas.jpg';
 
-const FALLBACKS = [fallback1, fallback2, fallback3, fallback4];
+const FALLBACKS = [fallback1, fallback2, fallback3, fallback4, fallback5];
 
 export default function ProjectSection() {
   const { secciones, zonasComunes } = useContent();
   const s = secciones['proyecto'] ?? {};
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(2);
 
   const zones = zonasComunes.map((z, i) => ({
     ...z,

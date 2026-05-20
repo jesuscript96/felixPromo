@@ -79,6 +79,7 @@ export interface SiteConfig {
     'URL Aviso Legal'?: string;
     'URL Privacidad'?: string;
     'URL Política de Cookies'?: string;
+    'URL_maps'?: string;
     'Latitud'?: number;
     'Longitud'?: number;
     'Nombre Marca'?: string;
