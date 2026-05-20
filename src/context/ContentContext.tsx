@@ -95,11 +95,14 @@ export interface ContentState {
     loading: boolean;
     config: SiteConfig;
     secciones: Record<string, SeccionContent>;
+    seccionesOrden: string[];
     imagenes: Record<string, ImagenContent[]>;
     amenidades: AmenidadContent[];
     zonasComunes: ZonaComunContent[];
     navegacion: NavItem[];
 }
+
+const DEFAULT_SECCIONES_ORDEN = ['hero', 'nosotros', 'proyecto', 'amenidades', 'detalles', 'propiedad'];
 
 const initialState: ContentState = {
     loading: true,
@@ -107,6 +110,7 @@ const initialState: ContentState = {
     secciones: Object.fromEntries(
         Object.entries(DEFAULT_SECCIONES).map(([k, v]) => [k, { id: `default-${k}`, ...v }])
     ),
+    seccionesOrden: DEFAULT_SECCIONES_ORDEN,
     imagenes: {},
     amenidades: DEFAULT_AMENIDADES,
     zonasComunes: DEFAULT_ZONAS,
@@ -144,11 +148,20 @@ export function ContentProvider({ children }: { children: ReactNode }) {
                     Object.entries(DEFAULT_SECCIONES).map(([k, v]) => [k, { id: `default-${k}`, ...v }])
                 ),
             };
-            seccionesRaw
-                .filter((s) => s.Activo !== false && s.Clave)
-                .forEach((s) => {
-                    seccionesMap[s.Clave!] = { ...seccionesMap[s.Clave!], ...s };
-                });
+            const seccionesActivas = seccionesRaw.filter((s) => s.Activo !== false && s.Clave);
+            seccionesActivas.forEach((s) => {
+                seccionesMap[s.Clave!] = { ...seccionesMap[s.Clave!], ...s };
+            });
+
+            // Orden de secciones: preserva el orden de Airtable,
+            // añade al final las que solo están en los defaults
+            const ordenAirtable = seccionesActivas.map((s) => s.Clave!);
+            const seccionesOrden = ordenAirtable.length > 0
+                ? [
+                    ...ordenAirtable,
+                    ...DEFAULT_SECCIONES_ORDEN.filter((c) => !ordenAirtable.includes(c)),
+                  ]
+                : DEFAULT_SECCIONES_ORDEN;
 
             // Mapa ID de registro → Clave, para resolver campos de tipo "linked record"
             // (Airtable autovincula el campo Sección si su nombre coincide con una tabla)
@@ -201,7 +214,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
                           .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
                     : DEFAULT_NAVEGACION;
 
-            setState({ loading: false, config, secciones: seccionesMap, imagenes: imagenesMap, amenidades, zonasComunes, navegacion });
+            setState({ loading: false, config, secciones: seccionesMap, seccionesOrden, imagenes: imagenesMap, amenidades, zonasComunes, navegacion });
         };
 
         load();

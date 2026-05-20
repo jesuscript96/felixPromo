@@ -45,6 +45,7 @@ export interface Unit {
     'Precio de Venta (PVP)'?: number;
     'PVP Mercado'?: number;
     Estado?: string;
+    Reservado?: boolean;
     Documentación?: AirtableAttachment[];
     ANEXOS?: string[];
 }

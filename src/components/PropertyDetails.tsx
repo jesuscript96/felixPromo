@@ -270,25 +270,35 @@ export default function PropertyDetails() {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {typologyUnits.sort((a, b) => (a.Referencia || '').localeCompare(b.Referencia || '')).map((unit) => (
-                                        <tr key={unit.id} className="border-b border-brand-text/10 last:border-0 hover:bg-brand-accent/5 transition-colors">
-                                          <td className="py-3 px-4 font-medium">{unit.Referencia || '-'}</td>
-                                          <td className="py-3 px-4">{unit.Planta || '-'}</td>
-                                          <td className="py-3 px-4">{unit.Habitaciones || '-'}</td>
-                                          <td className="py-3 px-4">{unit['m² Construidos'] ? `${unit['m² Construidos']} m²` : '-'}</td>
-                                          <td className="py-3 px-4">{unit['m² Terraza'] ? `${unit['m² Terraza']} m²` : '-'}</td>
+                                      {typologyUnits.sort((a, b) => (a.Referencia || '').localeCompare(b.Referencia || '')).map((unit) => {
+                                        const isReservado = unit.Reservado === true;
+                                        return (
+                                        <tr key={unit.id} className={`border-b border-brand-text/10 last:border-0 transition-colors ${isReservado ? 'bg-amber-50/50' : 'hover:bg-brand-accent/5'}`}>
+                                          <td className={`py-3 px-4 font-medium ${isReservado ? 'text-brand-text/50' : ''}`}>{unit.Referencia || '-'}</td>
+                                          <td className={`py-3 px-4 ${isReservado ? 'text-brand-text/50' : ''}`}>{unit.Planta || '-'}</td>
+                                          <td className={`py-3 px-4 ${isReservado ? 'text-brand-text/50' : ''}`}>{unit.Habitaciones || '-'}</td>
+                                          <td className={`py-3 px-4 ${isReservado ? 'text-brand-text/50' : ''}`}>{unit['m² Construidos'] ? `${unit['m² Construidos']} m²` : '-'}</td>
+                                          <td className={`py-3 px-4 ${isReservado ? 'text-brand-text/50' : ''}`}>{unit['m² Terraza'] ? `${unit['m² Terraza']} m²` : '-'}</td>
                                           <td className="py-3 px-4">
-                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${unit.Estado === 'Disponible' ? 'bg-green-100 text-green-800' : unit.Estado === 'Reservado' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
-                                              {unit.Estado || 'Desconocido'}
+                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                              isReservado
+                                                ? 'bg-amber-100 text-amber-700'
+                                                : unit.Estado === 'Disponible'
+                                                ? 'bg-green-100 text-green-800'
+                                                : unit.Estado === 'Reservado'
+                                                ? 'bg-amber-100 text-amber-700'
+                                                : 'bg-red-100 text-red-800'
+                                            }`}>
+                                              {isReservado ? 'Reservado' : (unit.Estado || 'Desconocido')}
                                             </span>
                                           </td>
-                                          <td className="py-3 px-4 text-right font-medium text-brand-accent">
+                                          <td className={`py-3 px-4 text-right font-medium ${isReservado ? 'text-brand-text/40' : 'text-brand-accent'}`}>
                                             {unit['Precio de Venta (PVP)']
                                               ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(unit['Precio de Venta (PVP)']!)
                                               : 'Consultar'}
                                           </td>
                                           <td className="py-3 px-4 text-center">
-                                            {unit.Documentación?.[0] ? (
+                                            {unit.Documentación?.[0] && !isReservado ? (
                                               <a
                                                 href={unit.Documentación[0].url}
                                                 target="_blank"
@@ -301,7 +311,8 @@ export default function PropertyDetails() {
                                             ) : '-'}
                                           </td>
                                         </tr>
-                                      ))}
+                                        );
+                                      })}
                                     </tbody>
                                   </table>
                                 </div>
