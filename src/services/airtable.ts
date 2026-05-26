@@ -74,8 +74,8 @@ export interface SiteConfig {
     'Horario L-V'?: string;
     'Horario Sábado'?: string;
     'Horario Domingo'?: string;
-    'URL Dossier'?: string;
-    'URL Memoria Calidades'?: string;
+    'URL Dossier'?: string | AirtableAttachment[];
+    'URL Memoria Calidades'?: string | AirtableAttachment[];
     'URL Aviso Legal'?: string;
     'URL Privacidad'?: string;
     'URL Política de Cookies'?: string;
@@ -143,12 +143,21 @@ export interface NavItem {
 
 // ─── Función base de fetch ───────────────────────────────────────────────────
 
-const fetchFromAirtable = async <T>(tableName: string): Promise<T[]> => {
-    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}`;
+// ─── Función base de fetch ───────────────────────────────────────────────────
+
+const fetchFromAirtable = async <T>(tableName: string, params: string = ''): Promise<T[]> => {
+    let url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}${params}`;
     try {
-        const response = await fetch(url, {
+        let response = await fetch(url, {
             headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` },
         });
+        if (!response.ok && params.includes('view=')) {
+            console.warn(`Airtable: error fetching table "${tableName}" with view parameters. Retrying without view.`);
+            url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}`;
+            response = await fetch(url, {
+                headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` },
+            });
+        }
         if (!response.ok) {
             console.warn(`Airtable: tabla "${tableName}" no encontrada (${response.status}). Usando valores por defecto.`);
             return [];
@@ -200,11 +209,11 @@ export const submitLead = async (lead: LeadData): Promise<boolean> => {
 
 // ─── Exports ────────────────────────────────────────────────────────────────
 
-export const fetchTypologies = () => fetchFromAirtable<Typology>('TIPOLOGÍAS');
-export const fetchUnits = () => fetchFromAirtable<Unit>('UNIDADES');
+export const fetchTypologies = () => fetchFromAirtable<Typology>('TIPOLOGÍAS', '?view=Grid%20view');
+export const fetchUnits = () => fetchFromAirtable<Unit>('UNIDADES', '?view=Grid%20view');
 export const fetchSiteConfig = () => fetchFromAirtable<SiteConfig>('CONFIGURACION');
-export const fetchSecciones = () => fetchFromAirtable<SeccionContent>('SECCIONES');
-export const fetchImagenes = () => fetchFromAirtable<ImagenContent>('IMAGENES');
-export const fetchAmenidades = () => fetchFromAirtable<AmenidadContent>('AMENIDADES');
-export const fetchZonasComunes = () => fetchFromAirtable<ZonaComunContent>('ZONAS_COMUNES');
-export const fetchNavegacion = () => fetchFromAirtable<NavItem>('NAVEGACION');
+export const fetchSecciones = () => fetchFromAirtable<SeccionContent>('SECCIONES', '?view=Grid%20view');
+export const fetchImagenes = () => fetchFromAirtable<ImagenContent>('IMAGENES', '?view=Grid%20view');
+export const fetchAmenidades = () => fetchFromAirtable<AmenidadContent>('AMENIDADES', '?view=Grid%20view');
+export const fetchZonasComunes = () => fetchFromAirtable<ZonaComunContent>('ZONAS_COMUNES', '?view=Grid%20view');
+export const fetchNavegacion = () => fetchFromAirtable<NavItem>('NAVEGACION', '?view=Grid%20view');

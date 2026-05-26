@@ -11,9 +11,9 @@ import fallback5 from '../images/Residencial San Blas.jpg';
 const FALLBACKS = [fallback1, fallback2, fallback3, fallback4, fallback5];
 
 export default function ProjectSection() {
-  const { secciones, zonasComunes } = useContent();
+  const { secciones, imagenes } = useContent();
   const s = secciones['proyecto'] ?? {};
-  const [activeIndex, setActiveIndex] = useState(2);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isXl, setIsXl] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1280);
 
   useEffect(() => {
@@ -31,10 +31,39 @@ export default function ProjectSection() {
     d2H: isXl ? 300 : 230,
   };
 
-  const zones = zonasComunes.map((z, i) => ({
-    ...z,
-    imgUrl: z.Imagen?.[0]?.url ?? FALLBACKS[i % FALLBACKS.length],
-  }));
+  // Map carousel slides dynamically from IMAGENES table with Sección = 'proyecto'
+  const projectImages = imagenes['proyecto'] ?? [];
+  const zones = projectImages.length > 0
+    ? projectImages.map((img, i) => ({
+        id: img.id,
+        Nombre: img.Nombre ?? `Diseño ${i + 1}`,
+        Descripción: img['Texto Alt'] ?? '',
+        imgUrl: img.Imagen?.[0]?.url ?? FALLBACKS[i % FALLBACKS.length],
+      }))
+    : FALLBACKS.map((fb, i) => {
+        const fallbackTitles = [
+          'Arquitectura Sostenible',
+          'Interiores Luminosos',
+          'Vanguardia y Confort',
+          'Acabados Premium',
+          'Diseño Exclusivo'
+        ];
+        return {
+          id: `fallback-${i}`,
+          Nombre: fallbackTitles[i] ?? `Diseño ${i + 1}`,
+          Descripción: 'Detalle de diseño exclusivo y alta calidad del residencial NARA Moncada.',
+          imgUrl: fb,
+        };
+      });
+
+  // Automatically center the active slide once images load
+  useEffect(() => {
+    if (zones.length > 0) {
+      setActiveIndex(Math.floor(zones.length / 2));
+    }
+  }, [zones.length]);
+
+  const activeIndexClamped = Math.min(Math.max(0, activeIndex), Math.max(0, zones.length - 1));
 
   const prev = () => setActiveIndex((i) => Math.max(0, i - 1));
   const next = () => setActiveIndex((i) => Math.min(zones.length - 1, i + 1));
@@ -43,7 +72,7 @@ export default function ProjectSection() {
     <section id="proyecto" className="py-24 xl:py-36 bg-brand-bg overflow-hidden">
 
       {/* Cabecera */}
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 xl:px-32 mb-16 xl:mb-24">
+      <div className="max-w-[1700px] mx-auto px-6 md:px-12 lg:px-16 xl:px-24 mb-16 xl:mb-24">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -66,8 +95,8 @@ export default function ProjectSection() {
       <div className="hidden md:block">
         <div className="flex items-end justify-center gap-3 px-4">
           {zones.map((zone, i) => {
-            const dist = Math.abs(i - activeIndex);
-            const isActive = i === activeIndex;
+            const dist = Math.abs(i - activeIndexClamped);
+            const isActive = i === activeIndexClamped;
 
             return (
               <motion.div
@@ -119,7 +148,7 @@ export default function ProjectSection() {
         <div className="flex items-center justify-center gap-6 mt-10">
           <button
             onClick={prev}
-            disabled={activeIndex === 0}
+            disabled={activeIndexClamped === 0}
             className="p-3 border border-brand-text/20 text-brand-text hover:bg-brand-accent hover:border-brand-accent hover:text-brand-bg disabled:opacity-25 transition-all"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -132,7 +161,7 @@ export default function ProjectSection() {
                 key={i}
                 onClick={() => setActiveIndex(i)}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  i === activeIndex ? 'bg-brand-accent w-6' : 'bg-brand-text/20 hover:bg-brand-text/40'
+                  i === activeIndexClamped ? 'bg-brand-accent w-6' : 'bg-brand-text/20 hover:bg-brand-text/40'
                 }`}
               />
             ))}
@@ -140,7 +169,7 @@ export default function ProjectSection() {
 
           <button
             onClick={next}
-            disabled={activeIndex === zones.length - 1}
+            disabled={activeIndexClamped === zones.length - 1}
             className="p-3 border border-brand-text/20 text-brand-text hover:bg-brand-accent hover:border-brand-accent hover:text-brand-bg disabled:opacity-25 transition-all"
           >
             <ChevronRight className="w-5 h-5" />
@@ -150,21 +179,21 @@ export default function ProjectSection() {
 
       {/* Slider simple — móvil */}
       <div className="md:hidden px-6">
-        {zones[activeIndex] && (
+        {zones[activeIndexClamped] && (
           <div className="relative w-full h-[360px] overflow-hidden">
             <img
-              src={zones[activeIndex].imgUrl}
-              alt={zones[activeIndex].Nombre ?? ''}
+              src={zones[activeIndexClamped].imgUrl}
+              alt={zones[activeIndexClamped].Nombre ?? ''}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6">
               <h3 className="text-2xl font-heading text-white font-medium">
-                {zones[activeIndex].Nombre}
+                {zones[activeIndexClamped].Nombre}
               </h3>
-              {zones[activeIndex].Descripción && (
+              {zones[activeIndexClamped].Descripción && (
                 <p className="text-white/80 text-sm font-light mt-2 line-clamp-2">
-                  {zones[activeIndex].Descripción}
+                  {zones[activeIndexClamped].Descripción}
                 </p>
               )}
               <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-brand-highlight" />
@@ -173,13 +202,13 @@ export default function ProjectSection() {
         )}
 
         <div className="flex items-center justify-center gap-6 mt-6">
-          <button onClick={prev} disabled={activeIndex === 0} className="p-3 border border-brand-text/20 text-brand-text hover:bg-brand-accent hover:border-brand-accent hover:text-brand-bg disabled:opacity-25 transition-all">
+          <button onClick={prev} disabled={activeIndexClamped === 0} className="p-3 border border-brand-text/20 text-brand-text hover:bg-brand-accent hover:border-brand-accent hover:text-brand-bg disabled:opacity-25 transition-all">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <span className="text-sm text-brand-text/50 font-light tabular-nums">
-            {activeIndex + 1} / {zones.length}
+            {activeIndexClamped + 1} / {zones.length}
           </span>
-          <button onClick={next} disabled={activeIndex === zones.length - 1} className="p-3 border border-brand-text/20 text-brand-text hover:bg-brand-accent hover:border-brand-accent hover:text-brand-bg disabled:opacity-25 transition-all">
+          <button onClick={next} disabled={activeIndexClamped === zones.length - 1} className="p-3 border border-brand-text/20 text-brand-text hover:bg-brand-accent hover:border-brand-accent hover:text-brand-bg disabled:opacity-25 transition-all">
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>

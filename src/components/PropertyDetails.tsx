@@ -36,6 +36,17 @@ function buildMapSrc(urlMaps: string | undefined, fallbackAddress: string): stri
   }
 }
 
+const getDownloadUrl = (fieldValue: any): string | undefined => {
+  if (!fieldValue) return undefined;
+  if (Array.isArray(fieldValue)) {
+    return fieldValue[0]?.url;
+  }
+  if (typeof fieldValue === 'string') {
+    return fieldValue;
+  }
+  return undefined;
+};
+
 export default function PropertyDetails() {
   const { config, secciones, imagenes } = useContent();
   const s = secciones['propiedad'] ?? {};
@@ -135,7 +146,7 @@ export default function PropertyDetails() {
 
   return (
     <section id="promocion" className="py-24 xl:py-36 bg-brand-bg text-brand-text">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 xl:px-32">
+      <div className="max-w-[1700px] mx-auto px-6 md:px-12 lg:px-16 xl:px-24">
 
         {/* 1. Cabecera */}
         <div className="mb-16 border-b border-brand-text/10 pb-8">
@@ -358,7 +369,7 @@ export default function PropertyDetails() {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {typologyUnits.sort((a, b) => (a.Referencia || '').localeCompare(b.Referencia || '')).map((unit) => {
+                                      {typologyUnits.map((unit) => {
                                         const isReservado = unit.Reservado === true;
                                         return (
                                         <tr key={unit.id} className={`border-b border-brand-text/10 last:border-0 transition-colors ${isReservado ? 'bg-amber-50/50' : 'hover:bg-brand-accent/5'}`}>
@@ -419,9 +430,9 @@ export default function PropertyDetails() {
           </div>
 
           <div className="mt-8 flex flex-wrap gap-4">
-            {config['URL Memoria Calidades'] ? (
+            {getDownloadUrl(config['URL Memoria Calidades']) ? (
               <a
-                href={config['URL Memoria Calidades']}
+                href={getDownloadUrl(config['URL Memoria Calidades'])}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors"
@@ -429,13 +440,13 @@ export default function PropertyDetails() {
                 <Download className="w-4 h-4" /> Descargar memoria de calidades
               </a>
             ) : (
-              <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors">
+              <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors opacity-50 cursor-not-allowed" disabled>
                 <Download className="w-4 h-4" /> Descargar memoria de calidades
               </button>
             )}
-            {config['URL Dossier'] ? (
+            {getDownloadUrl(config['URL Dossier']) ? (
               <a
-                href={config['URL Dossier']}
+                href={getDownloadUrl(config['URL Dossier'])}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors"
@@ -443,7 +454,7 @@ export default function PropertyDetails() {
                 <Download className="w-4 h-4" /> Descargar dossier
               </a>
             ) : (
-              <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors">
+              <button className="flex items-center gap-2 border border-brand-accent text-brand-text px-6 py-3 text-sm font-medium hover:bg-brand-accent hover:text-brand-bg transition-colors opacity-50 cursor-not-allowed" disabled>
                 <Download className="w-4 h-4" /> Descargar dossier
               </button>
             )}

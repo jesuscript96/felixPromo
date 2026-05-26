@@ -9,8 +9,8 @@ export default function AboutSection() {
   const imgAlt = imagenes['nosotros']?.[0]?.['Texto Alt'] ?? 'NARA Moncada Exterior';
 
   return (
-    <section id="nosotros" className="py-24 xl:py-36 2xl:py-48 px-6 md:px-12 lg:px-24 xl:px-32 bg-brand-bg text-brand-text">
-      <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 xl:gap-32 items-center">
+    <section id="nosotros" className="py-24 xl:py-36 2xl:py-48 px-6 md:px-12 lg:px-16 xl:px-24 bg-brand-bg text-brand-text">
+      <div className="max-w-[1700px] mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 xl:gap-32 items-center">
         <div className="w-full lg:w-1/2">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
