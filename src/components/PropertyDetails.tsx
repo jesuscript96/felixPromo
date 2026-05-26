@@ -318,7 +318,7 @@ export default function PropertyDetails() {
                   <th className="py-4 px-4 font-medium">Uds Totales</th>
                   <th className="py-4 px-4 font-medium">Rango m²</th>
                   <th className="py-4 px-4 font-medium">Zonas Comunes</th>
-                  <th className="py-4 px-4 font-medium text-center">Plano</th>
+                  <th className="py-4 px-4 font-medium">Incluye</th>
                   <th className="py-4 px-4 font-medium text-right">Desplegar</th>
                 </tr>
               </thead>
@@ -335,12 +335,8 @@ export default function PropertyDetails() {
                         <td className="py-6 px-4">{item['Uds. Totales'] || 0}</td>
                         <td className="py-6 px-4">{item['Rango Tamaño'] || '-'}</td>
                         <td className="py-6 px-4">{item['Zonas Comunes'] || '-'}</td>
-                        <td className="py-6 px-4 text-center">
-                          {item['Planos de Tipología']?.[0] ? (
-                            <a href={item['Planos de Tipología'][0].url} target="_blank" rel="noreferrer" className="text-brand-accent hover:text-brand-highlight transition-colors inline-block" onClick={(e) => e.stopPropagation()} title="Descargar plano">
-                              <Download className="w-5 h-5" />
-                            </a>
-                          ) : '-'}
+                        <td className="py-6 px-4 text-sm font-light leading-relaxed max-w-xs">
+                          {item.Incluye || '-'}
                         </td>
                         <td className="py-6 px-4 text-right">
                           <button className="p-2 border border-brand-text/20 hover:bg-brand-accent hover:border-brand-accent hover:text-brand-bg transition-colors">

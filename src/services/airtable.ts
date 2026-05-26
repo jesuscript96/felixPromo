@@ -30,6 +30,7 @@ export interface Typology {
     'Uds. Totales'?: number;
     'Rango Tamaño'?: string;
     'Zonas Comunes'?: string;
+    Incluye?: string;
     UNIDADES?: string[];
 }
 
