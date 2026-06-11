@@ -28,6 +28,8 @@ const DEFAULT_CONFIG: Omit<SiteConfig, 'id'> = {
     'Nombre Marca': 'NARA MONCADA',
     'Crédito Footer': 'by NARA Capital & GOOR.STUDIO',
     'Copyright': 'NARA Capital. Todos los derechos reservados.',
+    'Comercializa Texto': 'Comercializa RK',
+    'Comercializa Logo': [],
 };
 
 const DEFAULT_SECCIONES: Record<string, Omit<SeccionContent, 'id'>> = {

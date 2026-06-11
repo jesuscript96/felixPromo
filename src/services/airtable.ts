@@ -87,6 +87,8 @@ export interface SiteConfig {
     'Crédito Footer'?: string;
     'Copyright'?: string;
     'Logo'?: AirtableAttachment[];
+    'Comercializa Texto'?: string;
+    'Comercializa Logo'?: AirtableAttachment[];
 }
 
 /** Tabla SECCIONES — un registro por sección de la web */

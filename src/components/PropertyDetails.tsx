@@ -1,10 +1,11 @@
 import { useState, useEffect, Fragment, type ChangeEvent, type FormEvent } from 'react';
-import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Phone, Clock, ChevronDown, ChevronUp, CheckCircle, AlertCircle } from 'lucide-react';
+import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Phone, Clock, ChevronDown, ChevronUp, CheckCircle, AlertCircle, Building } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import img1Fallback from '../images/Residencial San Blas - 2.jpg';
 import img2Fallback from '../images/Residencial Terra.png';
 import img3Fallback from '../images/Residencial Terra - 2.png';
 import img4Fallback from '../images/Residencial San Blas - 3.jpg';
+import rkLogoFallback from '../images/rk-logo.png';
 import { fetchTypologies, fetchUnits, submitLead, Typology, Unit } from '../services/airtable';
 import { useContent } from '../context/ContentContext';
 
@@ -50,6 +51,9 @@ const getDownloadUrl = (fieldValue: any): string | undefined => {
 export default function PropertyDetails() {
   const { config, secciones, imagenes } = useContent();
   const s = secciones['propiedad'] ?? {};
+  
+  const rkLogo = config['Comercializa Logo']?.[0]?.url ?? rkLogoFallback;
+  const comercializaText = config['Comercializa Texto'] ?? 'Comercializa RK';
 
   // Galería: imágenes de Airtable o fallbacks estáticos
   const galeriaAirtable = imagenes['galeria'] ?? [];
@@ -489,7 +493,7 @@ export default function PropertyDetails() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-brand-text/10 pt-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-brand-text/10 pt-12">
             <div className="flex gap-4">
               <div className="mt-1">
                 <MapPin className="w-6 h-6 text-brand-accent" />
@@ -529,6 +533,25 @@ export default function PropertyDetails() {
                     <p><span className="font-medium text-brand-text">Domingo:</span> {horarioDom}</p>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="mt-1">
+                <Building className="w-6 h-6 text-brand-accent" />
+              </div>
+              <div>
+                <h4 className="text-lg font-medium mb-2">Comercialización</h4>
+                <p className="text-sm font-light leading-relaxed text-brand-text/80 mb-4">
+                  {comercializaText}
+                </p>
+                {rkLogo && (
+                  <img
+                    src={rkLogo}
+                    alt="Logo Comercializadora"
+                    className="h-10 md:h-12 w-auto object-contain object-left max-w-[160px]"
+                  />
+                )}
               </div>
             </div>
           </div>
