@@ -61,7 +61,7 @@ export default function AmenitiesSection() {
           </motion.div>
         </div>
 
-        <div className="w-full lg:w-1/2 grid grid-cols-2 xl:grid-cols-3 gap-x-8 xl:gap-x-12 gap-y-12 xl:gap-y-16">
+        <div className="w-full lg:w-1/2 grid grid-cols-2 gap-x-8 xl:gap-x-12 gap-y-12 xl:gap-y-16">
           {amenidades.map((item, index) => {
             const Icon = resolveIcon(item.Icono);
             return (
