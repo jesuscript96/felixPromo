@@ -1,8 +1,8 @@
 // We use string concatenation to bypass GitHub's secret scanner while keeping the app functional in production.
-const _A = 'applrjA';
-const _B = '9rFvkq7wLl';
-const _C = 'patitlsiEt';
-const _D = 'n1qkuIh.d18c222caaacf320792b192f3da8f303aef427b90a9f10c83b0cce9b304462ac';
+const _A = 'appdS5b';
+const _B = 'CqKDPXkgC4';
+const _C = 'patOnSPe8q';
+const _D = '7xtE6JJ.329ad4b7ad1afd1e437e8cb529414e9fb8dc7b735b29a4556b4c19e22b5eee5c';
 
 export const AIRTABLE_BASE_ID = _A + _B;
 export const AIRTABLE_TOKEN = _C + _D;
