@@ -1,11 +1,11 @@
 import { useContent } from '../context/ContentContext';
-import rkLogoFallback from '../images/rk-logo.png';
+import comercializaLogoFallback from '../images/comercializa-logo.png';
 
 export default function Footer() {
   const { config } = useContent();
 
-  const rkLogo = config['Comercializa Logo']?.[0]?.url ?? rkLogoFallback;
-  const comercializaText = config['Comercializa Texto'] ?? 'Comercializa RK';
+  const comercializaLogo = config['Comercializa Logo']?.[0]?.url ?? comercializaLogoFallback;
+  const comercializaText = config['Comercializa Texto'] ?? 'RK y Álvaro Buyé';
 
   return (
     <footer id="contacto" className="bg-brand-accent text-brand-bg py-16 px-6 md:px-12 lg:px-24">
@@ -61,11 +61,11 @@ export default function Footer() {
             <span className="text-sm font-light text-brand-bg/80">
               {comercializaText}
             </span>
-            {rkLogo && (
+            {comercializaLogo && (
               <img
-                src={rkLogo}
-                alt="RK Logo"
-                className="h-10 md:h-12 w-auto object-contain object-left max-w-[180px]"
+                src={comercializaLogo}
+                alt="Logo Comercializadora"
+                className="h-14 md:h-16 w-auto object-contain object-left max-w-[260px]"
               />
             )}
           </div>

@@ -28,7 +28,7 @@ const DEFAULT_CONFIG: Omit<SiteConfig, 'id'> = {
     'Nombre Marca': 'NARA MONCADA',
     'Crédito Footer': 'by NARA Capital & GOOR.STUDIO',
     'Copyright': 'NARA Capital. Todos los derechos reservados.',
-    'Comercializa Texto': 'Comercializa RK',
+    'Comercializa Texto': 'RK y Álvaro Buyé',
     'Comercializa Logo': [],
 };
 

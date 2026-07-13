@@ -5,7 +5,8 @@ import img1Fallback from '../images/Residencial San Blas - 2.jpg';
 import img2Fallback from '../images/Residencial Terra.png';
 import img3Fallback from '../images/Residencial Terra - 2.png';
 import img4Fallback from '../images/Residencial San Blas - 3.jpg';
-import rkLogoFallback from '../images/rk-logo.png';
+
+import comercializaLogoFallback from '../images/comercializa-logo.png';
 import { fetchTypologies, fetchUnits, submitLead, Typology, Unit } from '../services/airtable';
 import { useContent } from '../context/ContentContext';
 
@@ -52,8 +53,8 @@ export default function PropertyDetails() {
   const { config, secciones, imagenes } = useContent();
   const s = secciones['propiedad'] ?? {};
   
-  const rkLogo = config['Comercializa Logo']?.[0]?.url ?? rkLogoFallback;
-  const comercializaText = config['Comercializa Texto'] ?? 'Comercializa RK';
+  const comercializaLogo = config['Comercializa Logo']?.[0]?.url ?? comercializaLogoFallback;
+  const comercializaText = config['Comercializa Texto'] ?? 'RK y Álvaro Buyé';
 
   // Galería: imágenes de Airtable o fallbacks estáticos
   const galeriaAirtable = imagenes['galeria'] ?? [];
@@ -545,11 +546,11 @@ export default function PropertyDetails() {
                 <p className="text-sm font-light leading-relaxed text-brand-text/80 mb-4">
                   {comercializaText}
                 </p>
-                {rkLogo && (
+                {comercializaLogo && (
                   <img
-                    src={rkLogo}
+                    src={comercializaLogo}
                     alt="Logo Comercializadora"
-                    className="h-10 md:h-12 w-auto object-contain object-left max-w-[160px]"
+                    className="h-14 md:h-16 w-auto object-contain object-left max-w-[240px]"
                   />
                 )}
               </div>
