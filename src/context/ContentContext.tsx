@@ -1,11 +1,13 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import {
-    fetchSiteConfig, fetchSecciones, fetchImagenes,
-    fetchAmenidades, fetchZonasComunes, fetchNavegacion,
     SiteConfig, SeccionContent, ImagenContent, AmenidadContent, ZonaComunContent, NavItem,
 } from '../services/airtable';
+import {
+    STATIC_CONFIG, STATIC_SECCIONES, STATIC_IMAGENES, STATIC_AMENIDADES,
+    STATIC_ZONAS_COMUNES, STATIC_NAVEGACION,
+} from '../data/content';
 
-// ─── Valores por defecto (se usan hasta que Airtable responda) ───────────────
+// ─── Valores por defecto (fallback si al regenerar content.ts faltara algún campo) ──
 
 const DEFAULT_CONFIG: Omit<SiteConfig, 'id'> = {
     'Nombre Promoción': 'NARA Moncada',
@@ -107,141 +109,100 @@ export interface ContentState {
 
 const DEFAULT_SECCIONES_ORDEN = ['hero', 'nosotros', 'proyecto', 'amenidades', 'detalles', 'propiedad'];
 
-const initialState: ContentState = {
-    loading: true,
-    config: { id: 'default', ...DEFAULT_CONFIG },
-    secciones: Object.fromEntries(
-        Object.entries(DEFAULT_SECCIONES).map(([k, v]) => [k, { id: `default-${k}`, ...v }])
-    ),
-    seccionesOrden: DEFAULT_SECCIONES_ORDEN,
-    imagenes: {},
-    amenidades: DEFAULT_AMENIDADES,
-    zonasComunes: DEFAULT_ZONAS,
-    navegacion: DEFAULT_NAVEGACION,
-};
+// ─── Construcción del estado (sincrónica, desde src/data/content.ts) ─────────
+
+function buildState(): ContentState {
+    // Config: merge defaults con el registro estático
+    const config: SiteConfig = { ...DEFAULT_CONFIG, ...STATIC_CONFIG };
+
+    // Secciones: keyed por Clave, merge con defaults
+    const seccionesMap: Record<string, SeccionContent> = {
+        ...Object.fromEntries(
+            Object.entries(DEFAULT_SECCIONES).map(([k, v]) => [k, { id: `default-${k}`, ...v }])
+        ),
+    };
+    // Solo los registros activos actualizan el contenido
+    STATIC_SECCIONES
+        .filter((s) => s.Activo !== false && s.Clave)
+        .forEach((s) => {
+            seccionesMap[s.Clave!] = { ...seccionesMap[s.Clave!], ...s };
+        });
+
+    // Orden: todos los registros con Clave (Activo no afecta al orden)
+    const ordenStatic = STATIC_SECCIONES
+        .filter((s) => s.Clave)
+        .map((s) => s.Clave!);
+
+    // Las secciones que no están en los datos estáticos se insertan en su posición
+    // por defecto (no al final), usando el orden relativo de DEFAULT_SECCIONES_ORDEN
+    const seccionesOrden = (() => {
+        if (ordenStatic.length === 0) return DEFAULT_SECCIONES_ORDEN;
+        const result = [...ordenStatic];
+        const soloEnDefaults = DEFAULT_SECCIONES_ORDEN.filter((c) => !result.includes(c));
+        for (const clave of soloEnDefaults) {
+            const defaultIdx = DEFAULT_SECCIONES_ORDEN.indexOf(clave);
+            const siguienteEnResult = DEFAULT_SECCIONES_ORDEN
+                .slice(defaultIdx + 1)
+                .find((c) => result.includes(c));
+            if (siguienteEnResult) {
+                result.splice(result.indexOf(siguienteEnResult), 0, clave);
+            } else {
+                result.push(clave);
+            }
+        }
+        return result;
+    })();
+
+    // Imagenes: agrupadas por Sección, ordenadas por Orden
+    const imagenesMap: Record<string, ImagenContent[]> = {};
+    STATIC_IMAGENES
+        .filter((img) => img.Activo !== false && img.Imagen?.[0])
+        .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
+        .forEach((img) => {
+            if (!img.Sección) return;
+            if (!imagenesMap[img.Sección]) imagenesMap[img.Sección] = [];
+            imagenesMap[img.Sección].push(img);
+        });
+
+    // Amenidades: estático o defaults
+    const amenidades =
+        STATIC_AMENIDADES.filter((a) => a.Activo !== false).length > 0
+            ? STATIC_AMENIDADES
+                  .filter((a) => a.Activo !== false)
+                  .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
+            : DEFAULT_AMENIDADES;
+
+    // Zonas comunes: estático o defaults
+    const zonasComunes =
+        STATIC_ZONAS_COMUNES.filter((z) => z.Activo !== false).length > 0
+            ? STATIC_ZONAS_COMUNES
+                  .filter((z) => z.Activo !== false)
+                  .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
+            : DEFAULT_ZONAS;
+
+    // Navegación: estático o defaults
+    const navegacion =
+        STATIC_NAVEGACION.filter((n) => n.Activo !== false).length > 0
+            ? STATIC_NAVEGACION
+                  .filter((n) => n.Activo !== false)
+                  .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
+            : DEFAULT_NAVEGACION;
+
+    return {
+        loading: false,
+        config, secciones: seccionesMap, seccionesOrden,
+        imagenes: imagenesMap, amenidades, zonasComunes, navegacion,
+    };
+}
+
+const initialState: ContentState = buildState();
 
 const ContentContext = createContext<ContentState>(initialState);
 
 // ─── Provider ────────────────────────────────────────────────────────────────
 
 export function ContentProvider({ children }: { children: ReactNode }) {
-    const [state, setState] = useState<ContentState>(initialState);
-
-    useEffect(() => {
-        const load = async () => {
-            const [configs, seccionesRaw, imagenesRaw, amenidadesRaw, zonasRaw, navRaw] =
-                await Promise.all([
-                    fetchSiteConfig(),
-                    fetchSecciones(),
-                    fetchImagenes(),
-                    fetchAmenidades(),
-                    fetchZonasComunes(),
-                    fetchNavegacion(),
-                ]);
-
-            // Config: merge defaults con primer registro de Airtable
-            const config: SiteConfig =
-                configs.length > 0
-                    ? { ...DEFAULT_CONFIG, ...configs[0] }
-                    : { id: 'default', ...DEFAULT_CONFIG };
-
-            // Secciones: keyed por Clave, merge con defaults
-            const seccionesMap: Record<string, SeccionContent> = {
-                ...Object.fromEntries(
-                    Object.entries(DEFAULT_SECCIONES).map(([k, v]) => [k, { id: `default-${k}`, ...v }])
-                ),
-            };
-            // Solo los registros activos actualizan el contenido
-            seccionesRaw
-                .filter((s) => s.Activo !== false && s.Clave)
-                .forEach((s) => {
-                    seccionesMap[s.Clave!] = { ...seccionesMap[s.Clave!], ...s };
-                });
-
-            // Orden: todos los registros con Clave (Activo no afecta al orden)
-            const ordenAirtable = seccionesRaw
-                .filter((s) => s.Clave)
-                .map((s) => s.Clave!);
-
-            // Las secciones que no están en Airtable se insertan en su posición
-            // por defecto (no al final), usando el orden relativo de DEFAULT_SECCIONES_ORDEN
-            const seccionesOrden = (() => {
-                if (ordenAirtable.length === 0) return DEFAULT_SECCIONES_ORDEN;
-                const result = [...ordenAirtable];
-                const soloEnDefaults = DEFAULT_SECCIONES_ORDEN.filter((c) => !result.includes(c));
-                for (const clave of soloEnDefaults) {
-                    const defaultIdx = DEFAULT_SECCIONES_ORDEN.indexOf(clave);
-                    // Busca la primera sección que va DESPUÉS en el orden por defecto y ya está en result
-                    const siguienteEnResult = DEFAULT_SECCIONES_ORDEN
-                        .slice(defaultIdx + 1)
-                        .find((c) => result.includes(c));
-                    if (siguienteEnResult) {
-                        result.splice(result.indexOf(siguienteEnResult), 0, clave);
-                    } else {
-                        result.push(clave);
-                    }
-                }
-                return result;
-            })();
-
-            // Mapa ID de registro → Clave, para resolver campos de tipo "linked record"
-            // (Airtable autovincula el campo Sección si su nombre coincide con una tabla)
-            const seccionesIdMap: Record<string, string> = {};
-            seccionesRaw.forEach((s) => {
-                if (s.id && s.Clave) seccionesIdMap[s.id] = s.Clave;
-            });
-
-            // Imagenes: agrupadas por Sección, ordenadas por Orden
-            const imagenesMap: Record<string, ImagenContent[]> = {};
-            imagenesRaw
-                .filter((img) => img.Activo !== false && img.Imagen?.[0])
-                .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
-                .forEach((img) => {
-                    // Sección puede llegar como string ("hero") o como array de IDs (["recXXX"])
-                    // si Airtable la creó como linked record en vez de texto plano
-                    const rawSeccion = img.Sección as unknown;
-                    let seccion: string | undefined;
-                    if (Array.isArray(rawSeccion)) {
-                        seccion = seccionesIdMap[rawSeccion[0]];
-                    } else if (typeof rawSeccion === 'string') {
-                        seccion = rawSeccion;
-                    }
-                    if (!seccion) return;
-                    if (!imagenesMap[seccion]) imagenesMap[seccion] = [];
-                    imagenesMap[seccion].push(img);
-                });
-
-            // Amenidades: Airtable o defaults
-            const amenidades =
-                amenidadesRaw.filter((a) => a.Activo !== false).length > 0
-                    ? amenidadesRaw
-                          .filter((a) => a.Activo !== false)
-                          .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
-                    : DEFAULT_AMENIDADES;
-
-            // Zonas comunes: Airtable o defaults
-            const zonasComunes =
-                zonasRaw.filter((z) => z.Activo !== false).length > 0
-                    ? zonasRaw
-                          .filter((z) => z.Activo !== false)
-                          .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
-                    : DEFAULT_ZONAS;
-
-            // Navegación: Airtable o defaults
-            const navegacion =
-                navRaw.filter((n) => n.Activo !== false).length > 0
-                    ? navRaw
-                          .filter((n) => n.Activo !== false)
-                          .sort((a, b) => (a.Orden ?? 0) - (b.Orden ?? 0))
-                    : DEFAULT_NAVEGACION;
-
-            setState({ loading: false, config, secciones: seccionesMap, seccionesOrden, imagenes: imagenesMap, amenidades, zonasComunes, navegacion });
-        };
-
-        load();
-    }, []);
-
-    return <ContentContext.Provider value={state}>{children}</ContentContext.Provider>;
+    return <ContentContext.Provider value={initialState}>{children}</ContentContext.Provider>;
 }
 
 export const useContent = () => useContext(ContentContext);

@@ -7,6 +7,9 @@ const _D = '7xtE6JJ.329ad4b7ad1afd1e437e8cb529414e9fb8dc7b735b29a4556b4c19e22b5e
 export const AIRTABLE_BASE_ID = _A + _B;
 export const AIRTABLE_TOKEN = _C + _D;
 
+// El contenido del site es ESTÁTICO (src/data/content.ts, generado desde los CSV
+// de Airtable con scripts/import-airtable-csv.mjs). Airtable solo se usa para ESCRIBIR leads.
+
 export interface AirtableAttachment {
     id: string;
     url: string;
@@ -51,7 +54,7 @@ export interface Unit {
     ANEXOS?: string[];
 }
 
-// ─── Nuevas tablas de CMS ────────────────────────────────────────────────────
+// ─── Tablas de CMS (ahora estáticas) ─────────────────────────────────────────
 
 /** Tabla CONFIGURACION — un único registro con todos los datos globales del site */
 export interface SiteConfig {
@@ -81,6 +84,7 @@ export interface SiteConfig {
     'URL Privacidad'?: string;
     'URL Política de Cookies'?: string;
     'URL_maps'?: string;
+    'geolocalizacion'?: string;
     'Latitud'?: number;
     'Longitud'?: number;
     'Nombre Marca'?: string;
@@ -144,36 +148,7 @@ export interface NavItem {
     Activo?: boolean;
 }
 
-// ─── Función base de fetch ───────────────────────────────────────────────────
-
-// ─── Función base de fetch ───────────────────────────────────────────────────
-
-const fetchFromAirtable = async <T>(tableName: string, params: string = ''): Promise<T[]> => {
-    let url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}${params}`;
-    try {
-        let response = await fetch(url, {
-            headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` },
-        });
-        if (!response.ok && params.includes('view=')) {
-            console.warn(`Airtable: error fetching table "${tableName}" with view parameters. Retrying without view.`);
-            url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}`;
-            response = await fetch(url, {
-                headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` },
-            });
-        }
-        if (!response.ok) {
-            console.warn(`Airtable: tabla "${tableName}" no encontrada (${response.status}). Usando valores por defecto.`);
-            return [];
-        }
-        const data = await response.json();
-        return data.records.map((record: any) => ({ id: record.id, ...record.fields })) as T[];
-    } catch (error) {
-        console.error(`Error cargando "${tableName}" desde Airtable:`, error);
-        return [];
-    }
-};
-
-// ─── Lead submission ─────────────────────────────────────────────────────────
+// ─── Lead submission (única escritura a Airtable) ────────────────────────────
 
 export interface LeadData {
     nombre: string;
@@ -209,14 +184,3 @@ export const submitLead = async (lead: LeadData): Promise<boolean> => {
         return false;
     }
 };
-
-// ─── Exports ────────────────────────────────────────────────────────────────
-
-export const fetchTypologies = () => fetchFromAirtable<Typology>('TIPOLOGÍAS', '?view=Grid%20view');
-export const fetchUnits = () => fetchFromAirtable<Unit>('UNIDADES', '?view=Grid%20view');
-export const fetchSiteConfig = () => fetchFromAirtable<SiteConfig>('CONFIGURACION');
-export const fetchSecciones = () => fetchFromAirtable<SeccionContent>('SECCIONES', '?view=Grid%20view');
-export const fetchImagenes = () => fetchFromAirtable<ImagenContent>('IMAGENES', '?view=Grid%20view');
-export const fetchAmenidades = () => fetchFromAirtable<AmenidadContent>('AMENIDADES', '?view=Grid%20view');
-export const fetchZonasComunes = () => fetchFromAirtable<ZonaComunContent>('ZONAS_COMUNES', '?view=Grid%20view');
-export const fetchNavegacion = () => fetchFromAirtable<NavItem>('NAVEGACION', '?view=Grid%20view');

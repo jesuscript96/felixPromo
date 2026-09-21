@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment, type ChangeEvent, type FormEvent } from 'react';
+import { useState, Fragment, type ChangeEvent, type FormEvent } from 'react';
 import { MapPin, Map, BedDouble, ChevronLeft, ChevronRight, Play, Eye, Mail, Download, Phone, Clock, ChevronDown, ChevronUp, CheckCircle, AlertCircle, Building } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import img1Fallback from '../images/Residencial San Blas - 2.jpg';
@@ -7,7 +7,8 @@ import img3Fallback from '../images/Residencial Terra - 2.png';
 import img4Fallback from '../images/Residencial San Blas - 3.jpg';
 
 import comercializaLogoFallback from '../images/comercializa-logo.png';
-import { fetchTypologies, fetchUnits, submitLead, Typology, Unit } from '../services/airtable';
+import { submitLead, Typology, Unit } from '../services/airtable';
+import { STATIC_TIPOLOGIAS, STATIC_UNIDADES } from '../data/content';
 import { useContent } from '../context/ContentContext';
 
 const FALLBACK_IMAGES = [img1Fallback, img2Fallback, img3Fallback, img4Fallback];
@@ -67,24 +68,9 @@ export default function PropertyDetails() {
   const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
   const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
 
-  const [typologies, setTypologies] = useState<Typology[]>([]);
-  const [units, setUnits] = useState<Unit[]>([]);
+  const typologies: Typology[] = STATIC_TIPOLOGIAS;
+  const units: Unit[] = STATIC_UNIDADES;
   const [expandedTypologyId, setExpandedTypologyId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      const [fetchedTypologies, fetchedUnits] = await Promise.all([
-        fetchTypologies(),
-        fetchUnits(),
-      ]);
-      setTypologies(fetchedTypologies);
-      setUnits(fetchedUnits);
-      setIsLoading(false);
-    };
-    loadData();
-  }, []);
 
   const toggleTypology = (id: string) => {
     setExpandedTypologyId((prev) => (prev === id ? null : id));
@@ -328,9 +314,7 @@ export default function PropertyDetails() {
                 </tr>
               </thead>
               <tbody className="text-sm font-light">
-                {isLoading ? (
-                  <tr><td colSpan={6} className="py-6 text-center">Cargando datos...</td></tr>
-                ) : typologies.map((item) => {
+                {typologies.map((item) => {
                   const isExpanded = expandedTypologyId === item.id;
                   const typologyUnits = getUnitsForTypology(item.id);
                   return (
